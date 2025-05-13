@@ -33,6 +33,9 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
 function App() {
   const [earthquakes, setEarthquakes] = useState<Earthquake[]>([]);
+  const [filteredEarthquakes, setFilteredEarthquakes] = useState<Earthquake[]>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedEarthquakeId, setSelectedEarthquakeId] = useState<
@@ -62,6 +65,7 @@ function App() {
       try {
         const response = await getEarthquakes();
         setEarthquakes(response.result);
+        setFilteredEarthquakes(response.result);
         setError(null);
       } catch (err) {
         setError("Failed to fetch earthquake data. Please try again later.");
@@ -76,6 +80,25 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
+  const handleSearch = (query: string) => {
+    if (!query.trim()) {
+      setFilteredEarthquakes(earthquakes);
+      return;
+    }
+
+    const searchTerm = query.toLowerCase();
+    const filtered = earthquakes.filter((earthquake) => {
+      return (
+        earthquake.title.toLowerCase().includes(searchTerm) ||
+        earthquake.location_properties.closestCity.name
+          .toLowerCase()
+          .includes(searchTerm) ||
+        earthquake.mag.toString().includes(searchTerm)
+      );
+    });
+    setFilteredEarthquakes(filtered);
+  };
+
   const handleEarthquakeSelect = (id: string) => {
     setSelectedEarthquakeId(id === selectedEarthquakeId ? null : id);
   };
@@ -89,7 +112,12 @@ function App() {
           backgroundColor: theme.palette.background.default,
         }}
       >
-        <Navbar darkMode={darkMode} onThemeChange={handleThemeChange} />
+        <Navbar
+          darkMode={darkMode}
+          onThemeChange={handleThemeChange}
+          earthquakes={earthquakes}
+          onSearch={handleSearch}
+        />
         <StyledContainer maxWidth="lg">
           {loading && (
             <Box display="flex" justifyContent="center" my={4}>
@@ -118,7 +146,7 @@ function App() {
                   Live Earthquake Map
                 </Typography>
                 <EarthquakeMap
-                  earthquakes={earthquakes}
+                  earthquakes={filteredEarthquakes}
                   selectedEarthquakeId={selectedEarthquakeId}
                   onEarthquakeSelect={handleEarthquakeSelect}
                 />
@@ -137,7 +165,7 @@ function App() {
                   Recent Earthquakes
                 </Typography>
                 <EarthquakeList
-                  earthquakes={earthquakes}
+                  earthquakes={filteredEarthquakes}
                   selectedEarthquakeId={selectedEarthquakeId}
                   onEarthquakeSelect={handleEarthquakeSelect}
                 />

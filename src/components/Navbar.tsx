@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   AppBar,
   Toolbar,
@@ -17,15 +17,23 @@ import {
   Badge,
   Avatar,
   Tooltip,
-  Switch,
-  alpha,
+  Divider,
+  ListItemIcon,
+  Fade,
+  Popper,
+  Paper,
+  ClickAwayListener,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
-import { styled } from "@mui/material/styles";
+import PersonIcon from "@mui/icons-material/Person";
+import SettingsIcon from "@mui/icons-material/Settings";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { styled, alpha } from "@mui/material/styles";
+import type { Earthquake } from "../types/earthquake";
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   background:
@@ -98,13 +106,55 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 interface NavbarProps {
   darkMode: boolean;
   onThemeChange: () => void;
+  earthquakes: Earthquake[];
+  onSearch: (query: string) => void;
 }
 
-const Navbar = ({ darkMode, onThemeChange }: NavbarProps) => {
+const NotificationItem = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
+  marginBottom: theme.spacing(1),
+  backgroundColor: theme.palette.background.paper,
+  border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+  "&:hover": {
+    backgroundColor: alpha(theme.palette.primary.main, 0.05),
+  },
+}));
+
+const Navbar = ({
+  darkMode,
+  onThemeChange,
+  earthquakes,
+  onSearch,
+}: NavbarProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeLink, setActiveLink] = useState("/");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      title: "New earthquake detected",
+      message: "Magnitude 4.5 earthquake near Istanbul",
+      time: "2 minutes ago",
+    },
+    {
+      id: 2,
+      title: "System update",
+      message: "New features have been added",
+      time: "1 hour ago",
+    },
+    {
+      id: 3,
+      title: "Data refresh",
+      message: "Earthquake data has been updated",
+      time: "2 hours ago",
+    },
+  ]);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const notificationsAnchorRef = useRef<HTMLButtonElement>(null);
+  const profileAnchorRef = useRef<HTMLButtonElement>(null);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -113,6 +163,40 @@ const Navbar = ({ darkMode, onThemeChange }: NavbarProps) => {
   const handleLinkClick = (href: string) => {
     setActiveLink(href);
     handleDrawerToggle();
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+    onSearch(query);
+  };
+
+  const handleNotificationsToggle = () => {
+    setNotificationsOpen(!notificationsOpen);
+  };
+
+  const handleProfileToggle = () => {
+    setProfileOpen(!profileOpen);
+  };
+
+  const handleCloseNotifications = (event: MouseEvent | TouchEvent) => {
+    if (
+      notificationsAnchorRef.current &&
+      notificationsAnchorRef.current.contains(event.target as Node)
+    ) {
+      return;
+    }
+    setNotificationsOpen(false);
+  };
+
+  const handleCloseProfile = (event: MouseEvent | TouchEvent) => {
+    if (
+      profileAnchorRef.current &&
+      profileAnchorRef.current.contains(event.target as Node)
+    ) {
+      return;
+    }
+    setProfileOpen(false);
   };
 
   const menuItems = [
@@ -174,6 +258,8 @@ const Navbar = ({ darkMode, onThemeChange }: NavbarProps) => {
                 </SearchIconWrapper>
                 <StyledInputBase
                   placeholder="Search earthquakes..."
+                  value={searchQuery}
+                  onChange={handleSearchChange}
                   inputProps={{ "aria-label": "search" }}
                 />
               </Search>
@@ -205,18 +291,160 @@ const Navbar = ({ darkMode, onThemeChange }: NavbarProps) => {
               </Tooltip>
 
               <Tooltip title="Notifications">
-                <IconButton color="inherit">
-                  <Badge badgeContent={4} color="error">
+                <IconButton
+                  ref={notificationsAnchorRef}
+                  onClick={handleNotificationsToggle}
+                  color="inherit"
+                >
+                  <Badge badgeContent={notifications.length} color="error">
                     <NotificationsIcon />
                   </Badge>
                 </IconButton>
               </Tooltip>
 
+              <Popper
+                open={notificationsOpen}
+                anchorEl={notificationsAnchorRef.current}
+                placement="bottom-end"
+                transition
+                style={{ zIndex: 1300 }}
+              >
+                {({ TransitionProps }) => (
+                  <Fade {...TransitionProps} timeout={350}>
+                    <Paper
+                      sx={{
+                        width: 320,
+                        maxHeight: 400,
+                        overflow: "auto",
+                        mt: 1,
+                      }}
+                    >
+                      <ClickAwayListener onClickAway={handleCloseNotifications}>
+                        <Box sx={{ p: 2 }}>
+                          <Typography variant="h6" sx={{ mb: 2 }}>
+                            Notifications
+                          </Typography>
+                          {notifications.map((notification) => (
+                            <NotificationItem key={notification.id}>
+                              <Typography variant="subtitle2">
+                                {notification.title}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
+                                {notification.message}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
+                                {notification.time}
+                              </Typography>
+                            </NotificationItem>
+                          ))}
+                        </Box>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Fade>
+                )}
+              </Popper>
+
               <Tooltip title="Profile">
-                <IconButton sx={{ p: 0 }}>
+                <IconButton
+                  ref={profileAnchorRef}
+                  onClick={handleProfileToggle}
+                  sx={{ p: 0 }}
+                >
                   <Avatar alt="User" src="/static/images/avatar/1.jpg" />
                 </IconButton>
               </Tooltip>
+
+              <Popper
+                open={profileOpen}
+                anchorEl={profileAnchorRef.current}
+                placement="bottom-end"
+                transition
+                style={{ zIndex: 1300 }}
+              >
+                {({ TransitionProps }) => (
+                  <Fade {...TransitionProps} timeout={350}>
+                    <Paper sx={{ width: 200, mt: 1 }}>
+                      <ClickAwayListener onClickAway={handleCloseProfile}>
+                        <List>
+                          <ListItem
+                            component="button"
+                            onClick={() => {}}
+                            sx={{
+                              width: "100%",
+                              textAlign: "left",
+                              border: "none",
+                              background: "none",
+                              cursor: "pointer",
+                              "&:hover": {
+                                backgroundColor: alpha(
+                                  theme.palette.primary.main,
+                                  0.1
+                                ),
+                              },
+                            }}
+                          >
+                            <ListItemIcon>
+                              <PersonIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText primary="Profile" />
+                          </ListItem>
+                          <ListItem
+                            component="button"
+                            onClick={() => {}}
+                            sx={{
+                              width: "100%",
+                              textAlign: "left",
+                              border: "none",
+                              background: "none",
+                              cursor: "pointer",
+                              "&:hover": {
+                                backgroundColor: alpha(
+                                  theme.palette.primary.main,
+                                  0.1
+                                ),
+                              },
+                            }}
+                          >
+                            <ListItemIcon>
+                              <SettingsIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText primary="Settings" />
+                          </ListItem>
+                          <Divider />
+                          <ListItem
+                            component="button"
+                            onClick={() => {}}
+                            sx={{
+                              width: "100%",
+                              textAlign: "left",
+                              border: "none",
+                              background: "none",
+                              cursor: "pointer",
+                              "&:hover": {
+                                backgroundColor: alpha(
+                                  theme.palette.primary.main,
+                                  0.1
+                                ),
+                              },
+                            }}
+                          >
+                            <ListItemIcon>
+                              <LogoutIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText primary="Logout" />
+                          </ListItem>
+                        </List>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Fade>
+                )}
+              </Popper>
 
               {isMobile && (
                 <IconButton
