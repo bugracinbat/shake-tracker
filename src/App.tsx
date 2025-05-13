@@ -32,6 +32,9 @@ function App() {
   const [earthquakes, setEarthquakes] = useState<Earthquake[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedEarthquakeId, setSelectedEarthquakeId] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     const fetchEarthquakes = async () => {
@@ -51,6 +54,10 @@ function App() {
 
     return () => clearInterval(interval);
   }, []);
+
+  const handleEarthquakeSelect = (id: string) => {
+    setSelectedEarthquakeId(id === selectedEarthquakeId ? null : id);
+  };
 
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#fafafa" }}>
@@ -82,7 +89,11 @@ function App() {
               >
                 Live Earthquake Map
               </Typography>
-              <EarthquakeMap earthquakes={earthquakes} />
+              <EarthquakeMap
+                earthquakes={earthquakes}
+                selectedEarthquakeId={selectedEarthquakeId}
+                onEarthquakeSelect={handleEarthquakeSelect}
+              />
             </StyledPaper>
 
             <StyledPaper>
@@ -97,7 +108,11 @@ function App() {
               >
                 Recent Earthquakes
               </Typography>
-              <EarthquakeList earthquakes={earthquakes} />
+              <EarthquakeList
+                earthquakes={earthquakes}
+                selectedEarthquakeId={selectedEarthquakeId}
+                onEarthquakeSelect={handleEarthquakeSelect}
+              />
             </StyledPaper>
           </Box>
         )}

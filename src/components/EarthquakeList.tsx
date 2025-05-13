@@ -12,9 +12,15 @@ import type { Earthquake } from "../types/earthquake";
 
 interface EarthquakeListProps {
   earthquakes: Earthquake[];
+  selectedEarthquakeId: string | null;
+  onEarthquakeSelect: (id: string) => void;
 }
 
-const EarthquakeList = ({ earthquakes }: EarthquakeListProps) => {
+const EarthquakeList = ({
+  earthquakes,
+  selectedEarthquakeId,
+  onEarthquakeSelect,
+}: EarthquakeListProps) => {
   return (
     <TableContainer>
       <Table>
@@ -31,7 +37,13 @@ const EarthquakeList = ({ earthquakes }: EarthquakeListProps) => {
           {earthquakes.map((earthquake) => (
             <TableRow
               key={earthquake._id}
+              onClick={() => onEarthquakeSelect(earthquake._id)}
               sx={{
+                cursor: "pointer",
+                backgroundColor:
+                  earthquake._id === selectedEarthquakeId
+                    ? "rgba(0, 0, 0, 0.04)"
+                    : "inherit",
                 "&:hover": {
                   backgroundColor: "rgba(0, 0, 0, 0.04)",
                 },
