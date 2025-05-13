@@ -6,6 +6,9 @@ import {
   CircularProgress,
   Alert,
   Paper,
+  ThemeProvider,
+  createTheme,
+  CssBaseline,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { getEarthquakes } from "./services/earthquakeService";
@@ -35,6 +38,24 @@ function App() {
   const [selectedEarthquakeId, setSelectedEarthquakeId] = useState<
     string | null
   >(null);
+  const [darkMode, setDarkMode] = useState(false);
+
+  const theme = createTheme({
+    palette: {
+      mode: darkMode ? "dark" : "light",
+      primary: {
+        main: "#0070f3",
+      },
+      background: {
+        default: darkMode ? "#000" : "#fafafa",
+        paper: darkMode ? "#1a1a1a" : "#fff",
+      },
+    },
+  });
+
+  const handleThemeChange = () => {
+    setDarkMode(!darkMode);
+  };
 
   useEffect(() => {
     const fetchEarthquakes = async () => {
@@ -60,64 +81,72 @@ function App() {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", backgroundColor: "#fafafa" }}>
-      <Navbar />
-      <StyledContainer maxWidth="lg">
-        {loading && (
-          <Box display="flex" justifyContent="center" my={4}>
-            <CircularProgress />
-          </Box>
-        )}
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box
+        sx={{
+          minHeight: "100vh",
+          backgroundColor: theme.palette.background.default,
+        }}
+      >
+        <Navbar darkMode={darkMode} onThemeChange={handleThemeChange} />
+        <StyledContainer maxWidth="lg">
+          {loading && (
+            <Box display="flex" justifyContent="center" my={4}>
+              <CircularProgress />
+            </Box>
+          )}
 
-        {error && (
-          <Alert severity="error" sx={{ my: 2 }}>
-            {error}
-          </Alert>
-        )}
+          {error && (
+            <Alert severity="error" sx={{ my: 2 }}>
+              {error}
+            </Alert>
+          )}
 
-        {!loading && !error && (
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            <StyledPaper>
-              <Typography
-                variant="h6"
-                sx={{
-                  mb: 2,
-                  fontWeight: 600,
-                  color: "#000",
-                  letterSpacing: "-0.5px",
-                }}
-              >
-                Live Earthquake Map
-              </Typography>
-              <EarthquakeMap
-                earthquakes={earthquakes}
-                selectedEarthquakeId={selectedEarthquakeId}
-                onEarthquakeSelect={handleEarthquakeSelect}
-              />
-            </StyledPaper>
+          {!loading && !error && (
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+              <StyledPaper>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    mb: 2,
+                    fontWeight: 600,
+                    color: theme.palette.text.primary,
+                    letterSpacing: "-0.5px",
+                  }}
+                >
+                  Live Earthquake Map
+                </Typography>
+                <EarthquakeMap
+                  earthquakes={earthquakes}
+                  selectedEarthquakeId={selectedEarthquakeId}
+                  onEarthquakeSelect={handleEarthquakeSelect}
+                />
+              </StyledPaper>
 
-            <StyledPaper>
-              <Typography
-                variant="h6"
-                sx={{
-                  mb: 2,
-                  fontWeight: 600,
-                  color: "#000",
-                  letterSpacing: "-0.5px",
-                }}
-              >
-                Recent Earthquakes
-              </Typography>
-              <EarthquakeList
-                earthquakes={earthquakes}
-                selectedEarthquakeId={selectedEarthquakeId}
-                onEarthquakeSelect={handleEarthquakeSelect}
-              />
-            </StyledPaper>
-          </Box>
-        )}
-      </StyledContainer>
-    </Box>
+              <StyledPaper>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    mb: 2,
+                    fontWeight: 600,
+                    color: theme.palette.text.primary,
+                    letterSpacing: "-0.5px",
+                  }}
+                >
+                  Recent Earthquakes
+                </Typography>
+                <EarthquakeList
+                  earthquakes={earthquakes}
+                  selectedEarthquakeId={selectedEarthquakeId}
+                  onEarthquakeSelect={handleEarthquakeSelect}
+                />
+              </StyledPaper>
+            </Box>
+          )}
+        </StyledContainer>
+      </Box>
+    </ThemeProvider>
   );
 }
 
