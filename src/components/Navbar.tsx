@@ -108,6 +108,7 @@ interface NavbarProps {
   onThemeChange: () => void;
   earthquakes: Earthquake[];
   onSearch: (query: string) => void;
+  onNavigate: (view: "home" | "analytics") => void;
 }
 
 const NotificationItem = styled(Paper)(({ theme }) => ({
@@ -125,6 +126,7 @@ const Navbar = ({
   onThemeChange,
   earthquakes,
   onSearch,
+  onNavigate,
 }: NavbarProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeLink, setActiveLink] = useState("/");
@@ -162,6 +164,11 @@ const Navbar = ({
 
   const handleLinkClick = (href: string) => {
     setActiveLink(href);
+    if (href === "/") {
+      onNavigate("home");
+    } else if (href === "#analytics") {
+      onNavigate("analytics");
+    }
     handleDrawerToggle();
   };
 
@@ -201,8 +208,7 @@ const Navbar = ({
 
   const menuItems = [
     { text: "Home", href: "/" },
-    { text: "Map", href: "#map" },
-    { text: "List", href: "#list" },
+    { text: "Analytics", href: "#analytics" },
     { text: "About", href: "#about" },
   ];
 
@@ -273,7 +279,14 @@ const Navbar = ({
                   <NavButton
                     key={item.text}
                     href={item.href}
-                    onClick={() => setActiveLink(item.href)}
+                    onClick={() => {
+                      setActiveLink(item.href);
+                      if (item.href === "/") {
+                        onNavigate("home");
+                      } else if (item.href === "#analytics") {
+                        onNavigate("analytics");
+                      }
+                    }}
                     className={activeLink === item.href ? "active" : ""}
                     sx={{ textTransform: "none" }}
                   >

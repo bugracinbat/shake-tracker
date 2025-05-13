@@ -15,6 +15,7 @@ import { getEarthquakes } from "./services/earthquakeService";
 import type { Earthquake } from "./types/earthquake";
 import EarthquakeList from "./components/EarthquakeList";
 import EarthquakeMap from "./components/EarthquakeMap";
+import EarthquakeAnalytics from "./components/EarthquakeAnalytics";
 import Navbar from "./components/Navbar";
 
 const StyledContainer = styled(Container)(({ theme }) => ({
@@ -42,6 +43,7 @@ function App() {
     string | null
   >(null);
   const [darkMode, setDarkMode] = useState(false);
+  const [currentView, setCurrentView] = useState<"home" | "analytics">("home");
 
   const theme = createTheme({
     palette: {
@@ -103,6 +105,10 @@ function App() {
     setSelectedEarthquakeId(id === selectedEarthquakeId ? null : id);
   };
 
+  const handleNavigation = (view: "home" | "analytics") => {
+    setCurrentView(view);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -117,6 +123,7 @@ function App() {
           onThemeChange={handleThemeChange}
           earthquakes={earthquakes}
           onSearch={handleSearch}
+          onNavigate={handleNavigation}
         />
         <StyledContainer maxWidth="lg">
           {loading && (
@@ -133,43 +140,49 @@ function App() {
 
           {!loading && !error && (
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-              <StyledPaper>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    mb: 2,
-                    fontWeight: 600,
-                    color: theme.palette.text.primary,
-                    letterSpacing: "-0.5px",
-                  }}
-                >
-                  Live Earthquake Map
-                </Typography>
-                <EarthquakeMap
-                  earthquakes={filteredEarthquakes}
-                  selectedEarthquakeId={selectedEarthquakeId}
-                  onEarthquakeSelect={handleEarthquakeSelect}
-                />
-              </StyledPaper>
+              {currentView === "home" ? (
+                <>
+                  <StyledPaper>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        mb: 2,
+                        fontWeight: 600,
+                        color: theme.palette.text.primary,
+                        letterSpacing: "-0.5px",
+                      }}
+                    >
+                      Live Earthquake Map
+                    </Typography>
+                    <EarthquakeMap
+                      earthquakes={filteredEarthquakes}
+                      selectedEarthquakeId={selectedEarthquakeId}
+                      onEarthquakeSelect={handleEarthquakeSelect}
+                    />
+                  </StyledPaper>
 
-              <StyledPaper>
-                <Typography
-                  variant="h6"
-                  sx={{
-                    mb: 2,
-                    fontWeight: 600,
-                    color: theme.palette.text.primary,
-                    letterSpacing: "-0.5px",
-                  }}
-                >
-                  Recent Earthquakes
-                </Typography>
-                <EarthquakeList
-                  earthquakes={filteredEarthquakes}
-                  selectedEarthquakeId={selectedEarthquakeId}
-                  onEarthquakeSelect={handleEarthquakeSelect}
-                />
-              </StyledPaper>
+                  <StyledPaper>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        mb: 2,
+                        fontWeight: 600,
+                        color: theme.palette.text.primary,
+                        letterSpacing: "-0.5px",
+                      }}
+                    >
+                      Recent Earthquakes
+                    </Typography>
+                    <EarthquakeList
+                      earthquakes={filteredEarthquakes}
+                      selectedEarthquakeId={selectedEarthquakeId}
+                      onEarthquakeSelect={handleEarthquakeSelect}
+                    />
+                  </StyledPaper>
+                </>
+              ) : (
+                <EarthquakeAnalytics earthquakes={filteredEarthquakes} />
+              )}
             </Box>
           )}
         </StyledContainer>
