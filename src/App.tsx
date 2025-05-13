@@ -5,12 +5,28 @@ import {
   Box,
   CircularProgress,
   Alert,
-  Grid,
+  Paper,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { getEarthquakes } from "./services/earthquakeService";
 import type { Earthquake } from "./types/earthquake";
 import EarthquakeList from "./components/EarthquakeList";
 import EarthquakeMap from "./components/EarthquakeMap";
+import Navbar from "./components/Navbar";
+
+const StyledContainer = styled(Container)(({ theme }) => ({
+  paddingTop: theme.spacing(4),
+  paddingBottom: theme.spacing(4),
+}));
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3),
+  borderRadius: "12px",
+  boxShadow:
+    "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+  backgroundColor: "rgba(255, 255, 255, 0.8)",
+  backdropFilter: "blur(8px)",
+}));
 
 function App() {
   const [earthquakes, setEarthquakes] = useState<Earthquake[]>([]);
@@ -37,12 +53,9 @@ function App() {
   }, []);
 
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ my: 4 }}>
-        <Typography variant="h3" component="h1" gutterBottom align="center">
-          Türkiye Earthquake Tracker
-        </Typography>
-
+    <Box sx={{ minHeight: "100vh", backgroundColor: "#fafafa" }}>
+      <Navbar />
+      <StyledContainer maxWidth="lg">
         {loading && (
           <Box display="flex" justifyContent="center" my={4}>
             <CircularProgress />
@@ -56,17 +69,40 @@ function App() {
         )}
 
         {!loading && !error && (
-          <Box sx={{ flexGrow: 1 }}>
-            <Box sx={{ mb: 3 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            <StyledPaper>
+              <Typography
+                variant="h6"
+                sx={{
+                  mb: 2,
+                  fontWeight: 600,
+                  color: "#000",
+                  letterSpacing: "-0.5px",
+                }}
+              >
+                Live Earthquake Map
+              </Typography>
               <EarthquakeMap earthquakes={earthquakes} />
-            </Box>
-            <Box>
+            </StyledPaper>
+
+            <StyledPaper>
+              <Typography
+                variant="h6"
+                sx={{
+                  mb: 2,
+                  fontWeight: 600,
+                  color: "#000",
+                  letterSpacing: "-0.5px",
+                }}
+              >
+                Recent Earthquakes
+              </Typography>
               <EarthquakeList earthquakes={earthquakes} />
-            </Box>
+            </StyledPaper>
           </Box>
         )}
-      </Box>
-    </Container>
+      </StyledContainer>
+    </Box>
   );
 }
 

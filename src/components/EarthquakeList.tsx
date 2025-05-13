@@ -1,5 +1,4 @@
 import {
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -7,6 +6,7 @@ import {
   TableHead,
   TableRow,
   Typography,
+  Box,
 } from "@mui/material";
 import type { Earthquake } from "../types/earthquake";
 
@@ -16,52 +16,78 @@ interface EarthquakeListProps {
 
 const EarthquakeList = ({ earthquakes }: EarthquakeListProps) => {
   return (
-    <TableContainer component={Paper}>
+    <TableContainer>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Date</TableCell>
-            <TableCell>Location</TableCell>
-            <TableCell>Magnitude</TableCell>
-            <TableCell>Depth (km)</TableCell>
-            <TableCell>Closest City</TableCell>
+            <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
+            <TableCell sx={{ fontWeight: 600 }}>Location</TableCell>
+            <TableCell sx={{ fontWeight: 600 }}>Magnitude</TableCell>
+            <TableCell sx={{ fontWeight: 600 }}>Depth (km)</TableCell>
+            <TableCell sx={{ fontWeight: 600 }}>Closest City</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {earthquakes.map((earthquake) => (
-            <TableRow key={earthquake._id}>
+            <TableRow
+              key={earthquake._id}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.04)",
+                },
+              }}
+            >
               <TableCell>
                 {new Date(earthquake.date_time).toLocaleString()}
               </TableCell>
               <TableCell>{earthquake.title}</TableCell>
               <TableCell>
-                <Typography
+                <Box
                   sx={{
-                    color:
+                    display: "inline-flex",
+                    alignItems: "center",
+                    px: 1,
+                    py: 0.5,
+                    borderRadius: 1,
+                    backgroundColor:
                       earthquake.mag >= 4
-                        ? "error.main"
+                        ? "rgba(211, 47, 47, 0.1)"
                         : earthquake.mag >= 3
-                        ? "warning.main"
-                        : "success.main",
-                    fontWeight: "bold",
+                        ? "rgba(237, 108, 2, 0.1)"
+                        : "rgba(46, 125, 50, 0.1)",
                   }}
                 >
-                  {earthquake.mag.toFixed(1)}
-                </Typography>
+                  <Typography
+                    sx={{
+                      color:
+                        earthquake.mag >= 4
+                          ? "error.main"
+                          : earthquake.mag >= 3
+                          ? "warning.main"
+                          : "success.main",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {earthquake.mag.toFixed(1)}
+                  </Typography>
+                </Box>
               </TableCell>
               <TableCell>{earthquake.depth.toFixed(1)}</TableCell>
               <TableCell>
-                {earthquake.location_properties.closestCity.name}
-                <Typography
-                  variant="caption"
-                  display="block"
-                  color="text.secondary"
-                >
-                  {Math.round(
-                    earthquake.location_properties.closestCity.distance / 1000
-                  )}{" "}
-                  km away
-                </Typography>
+                <Box>
+                  <Typography variant="body2">
+                    {earthquake.location_properties.closestCity.name}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "text.secondary", display: "block" }}
+                  >
+                    {Math.round(
+                      earthquake.location_properties.closestCity.distance / 1000
+                    )}{" "}
+                    km away
+                  </Typography>
+                </Box>
               </TableCell>
             </TableRow>
           ))}
