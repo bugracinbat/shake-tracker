@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -103,12 +104,25 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+const NavLink = styled(RouterLink)(({ theme }) => ({
+  color: theme.palette.mode === "dark" ? "#fff" : "#000",
+  textDecoration: "none",
+  padding: theme.spacing(1, 2),
+  borderRadius: theme.shape.borderRadius,
+  "&:hover": {
+    background: alpha(theme.palette.primary.main, 0.1),
+  },
+  "&.active": {
+    color: theme.palette.primary.main,
+    fontWeight: 600,
+  },
+}));
+
 interface NavbarProps {
   darkMode: boolean;
   onThemeChange: () => void;
   earthquakes: Earthquake[];
   onSearch: (query: string) => void;
-  onNavigate: (view: "home" | "analytics") => void;
 }
 
 const NotificationItem = styled(Paper)(({ theme }) => ({
@@ -126,10 +140,8 @@ const Navbar = ({
   onThemeChange,
   earthquakes,
   onSearch,
-  onNavigate,
 }: NavbarProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeLink, setActiveLink] = useState("/");
   const [searchQuery, setSearchQuery] = useState("");
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -157,19 +169,10 @@ const Navbar = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const notificationsAnchorRef = useRef<HTMLButtonElement>(null);
   const profileAnchorRef = useRef<HTMLButtonElement>(null);
+  const location = useLocation();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
-  };
-
-  const handleLinkClick = (href: string) => {
-    setActiveLink(href);
-    if (href === "/") {
-      onNavigate("home");
-    } else if (href === "#analytics") {
-      onNavigate("analytics");
-    }
-    handleDrawerToggle();
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,9 +210,9 @@ const Navbar = ({
   };
 
   const menuItems = [
-    { text: "Home", href: "/" },
-    { text: "Analytics", href: "#analytics" },
-    { text: "About", href: "#about" },
+    { text: "Home", path: "/" },
+    { text: "Analytics", path: "/analytics" },
+    { text: "About", path: "/about" },
   ];
 
   const drawer = (
@@ -227,18 +230,18 @@ const Navbar = ({
         {menuItems.map((item) => (
           <ListItem
             key={item.text}
-            component="a"
-            href={item.href}
-            onClick={() => handleLinkClick(item.href)}
+            component={RouterLink}
+            to={item.path}
+            onClick={handleDrawerToggle}
             sx={{
               "&:hover": {
                 background: alpha(theme.palette.primary.main, 0.1),
               },
               color:
-                activeLink === item.href
+                location.pathname === item.path
                   ? theme.palette.primary.main
                   : "inherit",
-              fontWeight: activeLink === item.href ? 600 : 400,
+              fontWeight: location.pathname === item.path ? 600 : 400,
             }}
           >
             <ListItemText primary={item.text} />
@@ -276,22 +279,13 @@ const Navbar = ({
             {!isMobile && (
               <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
                 {menuItems.map((item) => (
-                  <NavButton
+                  <NavLink
                     key={item.text}
-                    href={item.href}
-                    onClick={() => {
-                      setActiveLink(item.href);
-                      if (item.href === "/") {
-                        onNavigate("home");
-                      } else if (item.href === "#analytics") {
-                        onNavigate("analytics");
-                      }
-                    }}
-                    className={activeLink === item.href ? "active" : ""}
-                    sx={{ textTransform: "none" }}
+                    to={item.path}
+                    className={location.pathname === item.path ? "active" : ""}
                   >
                     {item.text}
-                  </NavButton>
+                  </NavLink>
                 ))}
               </Box>
             )}

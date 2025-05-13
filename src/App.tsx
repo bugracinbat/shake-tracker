@@ -11,6 +11,12 @@ import {
   CssBaseline,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import { getEarthquakes } from "./services/earthquakeService";
 import type { Earthquake } from "./types/earthquake";
 import EarthquakeList from "./components/EarthquakeList";
@@ -32,7 +38,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   backdropFilter: "blur(8px)",
 }));
 
-function App() {
+function AppContent() {
   const [earthquakes, setEarthquakes] = useState<Earthquake[]>([]);
   const [filteredEarthquakes, setFilteredEarthquakes] = useState<Earthquake[]>(
     []
@@ -43,7 +49,7 @@ function App() {
     string | null
   >(null);
   const [darkMode, setDarkMode] = useState(false);
-  const [currentView, setCurrentView] = useState<"home" | "analytics">("home");
+  const location = useLocation();
 
   const theme = createTheme({
     palette: {
@@ -105,10 +111,6 @@ function App() {
     setSelectedEarthquakeId(id === selectedEarthquakeId ? null : id);
   };
 
-  const handleNavigation = (view: "home" | "analytics") => {
-    setCurrentView(view);
-  };
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -123,7 +125,6 @@ function App() {
           onThemeChange={handleThemeChange}
           earthquakes={earthquakes}
           onSearch={handleSearch}
-          onNavigate={handleNavigation}
         />
         <StyledContainer maxWidth="lg">
           {loading && (
@@ -140,54 +141,71 @@ function App() {
 
           {!loading && !error && (
             <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-              {currentView === "home" ? (
-                <>
-                  <StyledPaper>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        mb: 2,
-                        fontWeight: 600,
-                        color: theme.palette.text.primary,
-                        letterSpacing: "-0.5px",
-                      }}
-                    >
-                      Live Earthquake Map
-                    </Typography>
-                    <EarthquakeMap
-                      earthquakes={filteredEarthquakes}
-                      selectedEarthquakeId={selectedEarthquakeId}
-                      onEarthquakeSelect={handleEarthquakeSelect}
-                    />
-                  </StyledPaper>
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <>
+                      <StyledPaper>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            mb: 2,
+                            fontWeight: 600,
+                            color: theme.palette.text.primary,
+                            letterSpacing: "-0.5px",
+                          }}
+                        >
+                          Live Earthquake Map
+                        </Typography>
+                        <EarthquakeMap
+                          earthquakes={filteredEarthquakes}
+                          selectedEarthquakeId={selectedEarthquakeId}
+                          onEarthquakeSelect={handleEarthquakeSelect}
+                        />
+                      </StyledPaper>
 
-                  <StyledPaper>
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        mb: 2,
-                        fontWeight: 600,
-                        color: theme.palette.text.primary,
-                        letterSpacing: "-0.5px",
-                      }}
-                    >
-                      Recent Earthquakes
-                    </Typography>
-                    <EarthquakeList
-                      earthquakes={filteredEarthquakes}
-                      selectedEarthquakeId={selectedEarthquakeId}
-                      onEarthquakeSelect={handleEarthquakeSelect}
-                    />
-                  </StyledPaper>
-                </>
-              ) : (
-                <EarthquakeAnalytics earthquakes={filteredEarthquakes} />
-              )}
+                      <StyledPaper>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            mb: 2,
+                            fontWeight: 600,
+                            color: theme.palette.text.primary,
+                            letterSpacing: "-0.5px",
+                          }}
+                        >
+                          Recent Earthquakes
+                        </Typography>
+                        <EarthquakeList
+                          earthquakes={filteredEarthquakes}
+                          selectedEarthquakeId={selectedEarthquakeId}
+                          onEarthquakeSelect={handleEarthquakeSelect}
+                        />
+                      </StyledPaper>
+                    </>
+                  }
+                />
+                <Route
+                  path="/analytics"
+                  element={
+                    <EarthquakeAnalytics earthquakes={filteredEarthquakes} />
+                  }
+                />
+              </Routes>
             </Box>
           )}
         </StyledContainer>
       </Box>
     </ThemeProvider>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   );
 }
 
