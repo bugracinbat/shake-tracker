@@ -8,6 +8,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import {
@@ -35,7 +37,10 @@ interface EarthquakeAnalyticsProps {
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
 
 const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
-  const [timeRange, setTimeRange] = useState("7d");
+  const [timeRange, setTimeRange] = useState("7");
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
   const handleTimeRangeChange = (event: SelectChangeEvent) => {
     setTimeRange(event.target.value);
@@ -113,16 +118,23 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
   }, [filteredEarthquakes]);
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: { xs: 2, md: 3 } }}>
       <Box
         sx={{
           mb: 3,
           display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: { xs: "flex-start", sm: "center" },
+          gap: 2,
         }}
       >
-        <Typography variant="h5" component="h2" gutterBottom>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ mb: { xs: 1, sm: 0 } }}
+        >
           Earthquake Analytics
         </Typography>
         <FormControl sx={{ minWidth: 120 }}>
@@ -139,61 +151,84 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
         </FormControl>
       </Box>
 
-      <Grid container spacing={3}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+          gap: 3,
+        }}
+      >
         {/* Magnitude Distribution */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2, height: "100%" }}>
-            <Typography variant="h6" gutterBottom>
-              Magnitude Distribution
-            </Typography>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={magnitudeData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="range" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar
-                  dataKey="count"
-                  fill="#8884d8"
-                  name="Number of Earthquakes"
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </Paper>
-        </Grid>
+        <Paper sx={{ p: 2, height: "100%", minHeight: 400 }}>
+          <Typography variant="h6" gutterBottom>
+            Magnitude Distribution
+          </Typography>
+          <ResponsiveContainer width="100%" height={350}>
+            <BarChart
+              data={magnitudeData}
+              margin={{
+                top: 20,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="range" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar
+                dataKey="count"
+                fill="#8884d8"
+                name="Number of Earthquakes"
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </Paper>
 
         {/* Time Series */}
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2, height: "100%" }}>
-            <Typography variant="h6" gutterBottom>
-              Earthquake Frequency Over Time
-            </Typography>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={timeSeriesData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="count"
-                  stroke="#82ca9d"
-                  name="Number of Earthquakes"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </Paper>
-        </Grid>
+        <Paper sx={{ p: 2, height: "100%", minHeight: 400 }}>
+          <Typography variant="h6" gutterBottom>
+            Earthquake Frequency Over Time
+          </Typography>
+          <ResponsiveContainer width="100%" height={350}>
+            <LineChart
+              data={timeSeriesData}
+              margin={{
+                top: 20,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="count"
+                stroke="#82ca9d"
+                name="Number of Earthquakes"
+                strokeWidth={2}
+                dot={{ r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </Paper>
 
         {/* Depth Distribution */}
-        <Grid item xs={12}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Depth Distribution
-            </Typography>
-            <ResponsiveContainer width="100%" height={300}>
+        <Paper
+          sx={{ p: 2, minHeight: 400, gridColumn: { xs: "1", md: "1 / -1" } }}
+        >
+          <Typography variant="h6" gutterBottom>
+            Depth Distribution
+          </Typography>
+          <Box sx={{ height: 400, width: "100%" }}>
+            <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={depthData}
@@ -201,8 +236,10 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
                   nameKey="range"
                   cx="50%"
                   cy="50%"
-                  outerRadius={100}
-                  label
+                  outerRadius={isMobile ? 80 : 120}
+                  label={({ name, percent }) =>
+                    `${name} (${(percent * 100).toFixed(0)}%)`
+                  }
                 >
                   {depthData.map((entry, index) => (
                     <Cell
@@ -212,12 +249,16 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
                   ))}
                 </Pie>
                 <Tooltip />
-                <Legend />
+                <Legend
+                  layout={isMobile ? "horizontal" : "vertical"}
+                  verticalAlign={isMobile ? "bottom" : "middle"}
+                  align={isMobile ? "center" : "right"}
+                />
               </PieChart>
             </ResponsiveContainer>
-          </Paper>
-        </Grid>
-      </Grid>
+          </Box>
+        </Paper>
+      </Box>
     </Box>
   );
 };
