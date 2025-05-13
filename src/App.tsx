@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Container,
   Typography,
@@ -9,6 +9,8 @@ import {
   ThemeProvider,
   createTheme,
   CssBaseline,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import {
@@ -23,9 +25,10 @@ import EarthquakeList from "./components/EarthquakeList";
 import EarthquakeMap from "./components/EarthquakeMap";
 import EarthquakeAnalytics from "./components/EarthquakeAnalytics";
 import Navbar from "./components/Navbar";
+import RefreshIcon from "@mui/icons-material/Refresh";
 
 const StyledContainer = styled(Container)(({ theme }) => ({
-  paddingTop: theme.spacing(4),
+  paddingTop: theme.spacing(2),
   paddingBottom: theme.spacing(4),
 }));
 
@@ -38,6 +41,8 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   backdropFilter: "blur(8px)",
 }));
 
+const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes in milliseconds
+
 function AppContent() {
   const [earthquakes, setEarthquakes] = useState<Earthquake[]>([]);
   const [filteredEarthquakes, setFilteredEarthquakes] = useState<Earthquake[]>(
@@ -49,6 +54,7 @@ function AppContent() {
     string | null
   >(null);
   const [darkMode, setDarkMode] = useState(false);
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
   const location = useLocation();
 
   const theme = createTheme({
@@ -64,29 +70,30 @@ function AppContent() {
     },
   });
 
-  const handleThemeChange = () => {
-    setDarkMode(!darkMode);
-  };
+  const fetchEarthquakes = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await getEarthquakes();
+      setEarthquakes(response.result);
+      setFilteredEarthquakes(response.result);
+      setLastRefresh(new Date());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchEarthquakes = async () => {
-      try {
-        const response = await getEarthquakes();
-        setEarthquakes(response.result);
-        setFilteredEarthquakes(response.result);
-        setError(null);
-      } catch (err) {
-        setError("Failed to fetch earthquake data. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchEarthquakes();
-    const interval = setInterval(fetchEarthquakes, 60000); // Refresh every minute
 
-    return () => clearInterval(interval);
-  }, []);
+    // Set up automatic refresh
+    const intervalId = setInterval(fetchEarthquakes, REFRESH_INTERVAL);
+
+    // Cleanup interval on unmount
+    return () => clearInterval(intervalId);
+  }, [fetchEarthquakes]);
 
   const handleSearch = (query: string) => {
     if (!query.trim()) {
@@ -111,6 +118,14 @@ function AppContent() {
     setSelectedEarthquakeId(id === selectedEarthquakeId ? null : id);
   };
 
+  const handleThemeChange = () => {
+    setDarkMode(!darkMode);
+  };
+
+  const formatLastRefresh = () => {
+    return lastRefresh.toLocaleTimeString();
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -126,6 +141,26 @@ function AppContent() {
           earthquakes={earthquakes}
           onSearch={handleSearch}
         />
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            gap: 2,
+            px: 2,
+            pt: 1,
+            pb: 0,
+          }}
+        >
+          <Typography variant="body2" color="text.secondary">
+            Last updated: {formatLastRefresh()}
+          </Typography>
+          <Tooltip title="Refresh data">
+            <IconButton onClick={fetchEarthquakes} disabled={loading}>
+              <RefreshIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
         <StyledContainer maxWidth="lg">
           {loading && (
             <Box display="flex" justifyContent="center" my={4}>
