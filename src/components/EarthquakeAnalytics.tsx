@@ -3,24 +3,16 @@ import {
   Box,
   Paper,
   Typography,
-  Grid,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  useTheme,
-  useMediaQuery,
   Card,
   CardContent,
-  Divider,
   Chip,
   Stack,
   IconButton,
   Tooltip as MuiTooltip,
-  Button,
-  ButtonGroup,
-  Tabs,
-  Tab,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import {
@@ -32,11 +24,6 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
   Area,
   AreaChart,
   ScatterChart,
@@ -50,20 +37,18 @@ import {
   subDays,
   parseISO,
   differenceInHours,
-  startOfDay,
-  endOfDay,
 } from "date-fns";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import WarningIcon from "@mui/icons-material/Warning";
 import InfoIcon from "@mui/icons-material/Info";
 import type { Earthquake } from "../types/earthquake";
+import React from "react";
+import { alpha, useTheme } from "@mui/material/styles";
 
 interface EarthquakeAnalyticsProps {
   earthquakes: Earthquake[];
 }
-
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
 
 const StatCard = ({
   title,
@@ -78,7 +63,6 @@ const StatCard = ({
   icon?: React.ReactNode;
   info?: string;
 }) => {
-  const theme = useTheme();
   return (
     <Card sx={{ height: "100%" }}>
       <CardContent>
@@ -127,7 +111,13 @@ const StatCard = ({
   );
 };
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+// Fix CustomTooltip to return React.ReactElement or null
+// interface CustomTooltipProps {
+//   active?: boolean;
+//   payload?: Array<{ name: string; value: string | number; color: string }>;
+//   label?: string;
+// }
+const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <Paper
@@ -139,7 +129,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         }}
       >
         <Typography variant="subtitle2">{label}</Typography>
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry, index) => (
           <Typography key={index} variant="body2" sx={{ color: entry.color }}>
             {entry.name}: {entry.value}
           </Typography>
@@ -151,27 +141,17 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
+  const theme = useTheme();
   const [timeRange, setTimeRange] = useState("7");
-  const [viewMode, setViewMode] = useState("overview");
   const [selectedMagnitude, setSelectedMagnitude] = useState<string | null>(
     null
   );
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
 
   const handleTimeRangeChange = (event: SelectChangeEvent) => {
     setTimeRange(event.target.value);
   };
 
-  const handleViewModeChange = (
-    event: React.SyntheticEvent,
-    newValue: string
-  ) => {
-    setViewMode(newValue);
-  };
-
-  const handleMagnitudeClick = (data: any) => {
+  const handleMagnitudeClick = (data: { range: string }) => {
     setSelectedMagnitude(data.range === selectedMagnitude ? null : data.range);
   };
 
@@ -302,7 +282,162 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
   }, [filteredEarthquakes]);
 
   return (
-    <Box sx={{ p: { xs: 2, md: 3 } }}>
+    <Box
+      sx={{
+        p: { xs: 2, md: 3 },
+        borderRadius: 6,
+        background: `linear-gradient(120deg, ${theme.palette.primary.light} 0%, ${theme.palette.secondary.light} 100%)`,
+        boxShadow:
+          theme.palette.mode === "dark"
+            ? `0 12px 48px ${alpha(theme.palette.common.black, 0.4)}`
+            : `0 12px 48px ${alpha(theme.palette.primary.main, 0.08)}`,
+        position: "relative",
+        overflow: "hidden",
+        "::before": {
+          content: '""',
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          background: "rgba(255,255,255,0.12)", // lighter overlay
+          zIndex: 0,
+        },
+        zIndex: 1,
+        animation: "analyticsBgMove 12s ease-in-out infinite",
+        "@keyframes analyticsBgMove": {
+          "0%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+          "100%": { backgroundPosition: "0% 50%" },
+        },
+      }}
+    >
+      {/* Floating Stats Bar */}
+      <Box
+        sx={{
+          display: "flex",
+          gap: 3,
+          mb: 4,
+          justifyContent: "center",
+          flexWrap: "wrap",
+          position: "relative",
+          zIndex: 2,
+        }}
+      >
+        <Paper
+          elevation={6}
+          sx={{
+            p: 2,
+            borderRadius: 4,
+            minWidth: 160,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            background: "rgba(255,255,255,0.85)",
+            boxShadow: "0 4px 24px rgba(33,150,243,0.10)",
+          }}
+        >
+          <span role="img" aria-label="total">
+            📊
+          </span>
+          <Typography
+            variant="h6"
+            color="primary.main"
+            fontWeight={700}
+            sx={{ lineHeight: 1 }}
+          >
+            {stats.totalCount}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Total
+          </Typography>
+        </Paper>
+        <Paper
+          elevation={6}
+          sx={{
+            p: 2,
+            borderRadius: 4,
+            minWidth: 160,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            background: "rgba(255,255,255,0.85)",
+            boxShadow: "0 4px 24px rgba(33,150,243,0.10)",
+          }}
+        >
+          <span role="img" aria-label="avg">
+            📈
+          </span>
+          <Typography
+            variant="h6"
+            color="warning.main"
+            fontWeight={700}
+            sx={{ lineHeight: 1 }}
+          >
+            {stats.avgMagnitude}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Avg Magnitude
+          </Typography>
+        </Paper>
+        <Paper
+          elevation={6}
+          sx={{
+            p: 2,
+            borderRadius: 4,
+            minWidth: 160,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            background: "rgba(255,255,255,0.85)",
+            boxShadow: "0 4px 24px rgba(33,150,243,0.10)",
+          }}
+        >
+          <span role="img" aria-label="max">
+            💥
+          </span>
+          <Typography
+            variant="h6"
+            color="error.main"
+            fontWeight={700}
+            sx={{ lineHeight: 1 }}
+          >
+            {stats.maxMagnitude}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Max Magnitude
+          </Typography>
+        </Paper>
+        <Paper
+          elevation={6}
+          sx={{
+            p: 2,
+            borderRadius: 4,
+            minWidth: 160,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            background: "rgba(255,255,255,0.85)",
+            boxShadow: "0 4px 24px rgba(33,150,243,0.10)",
+          }}
+        >
+          <span role="img" aria-label="recent">
+            ⏰
+          </span>
+          <Typography
+            variant="h6"
+            color="info.main"
+            fontWeight={700}
+            sx={{ lineHeight: 1 }}
+          >
+            {stats.recentCount}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Last 24h
+          </Typography>
+        </Paper>
+      </Box>
+
       <Box
         sx={{
           mb: 3,
@@ -340,26 +475,6 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
               <MenuItem value="90">Last 90 days</MenuItem>
             </Select>
           </FormControl>
-          <ButtonGroup variant="outlined" size="small">
-            <Button
-              onClick={() => setViewMode("overview")}
-              variant={viewMode === "overview" ? "contained" : "outlined"}
-            >
-              Overview
-            </Button>
-            <Button
-              onClick={() => setViewMode("magnitude")}
-              variant={viewMode === "magnitude" ? "contained" : "outlined"}
-            >
-              Magnitude
-            </Button>
-            <Button
-              onClick={() => setViewMode("depth")}
-              variant={viewMode === "depth" ? "contained" : "outlined"}
-            >
-              Depth
-            </Button>
-          </ButtonGroup>
         </Box>
       </Box>
 
@@ -484,7 +599,7 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
                 name="Number of Earthquakes"
                 animationDuration={1500}
               />
-              <Line
+              <Scatter
                 yAxisId="right"
                 type="monotone"
                 dataKey="avgMagnitude"
@@ -495,7 +610,7 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
                 activeDot={{ r: 6 }}
                 animationDuration={1500}
               />
-              <Line
+              <Scatter
                 yAxisId="right"
                 type="monotone"
                 dataKey="maxMagnitude"

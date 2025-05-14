@@ -375,6 +375,26 @@ function AppContent() {
               overflow: "hidden",
             }}
           >
+            {/* Animated background element for hero */}
+            <Box
+              sx={{
+                position: "absolute",
+                top: "-60px",
+                right: "-60px",
+                width: 220,
+                height: 220,
+                borderRadius: "50%",
+                background: `radial-gradient(circle, ${theme.palette.primary.light} 0%, ${theme.palette.secondary.light} 100%)`,
+                opacity: 0.18,
+                filter: "blur(8px)",
+                zIndex: 0,
+                animation: "pulseHero 4s infinite alternate",
+                "@keyframes pulseHero": {
+                  from: { transform: "scale(1)" },
+                  to: { transform: "scale(1.08)" },
+                },
+              }}
+            />
             <Typography
               variant="h2"
               sx={{
@@ -416,7 +436,7 @@ function AppContent() {
               Explore recent seismic activity, view analytics, and share your
               experience with the community.
             </Typography>
-            {/* Quick Analytics Section */}
+            {/* Quick Analytics Section - improved card style */}
             <Box
               sx={{
                 display: "flex",
@@ -424,9 +444,26 @@ function AppContent() {
                 gap: 3,
                 mb: 4,
                 justifyContent: "center",
+                zIndex: 1,
               }}
             >
-              <Box sx={{ minWidth: 120, textAlign: "center" }}>
+              <Box
+                sx={{
+                  minWidth: 140,
+                  textAlign: "center",
+                  p: 2,
+                  borderRadius: 3,
+                  bgcolor: "background.paper",
+                  boxShadow: 3,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                <span role="img" aria-label="total">
+                  📊
+                </span>
                 <Typography variant="h6" color="primary.main" fontWeight={700}>
                   {earthquakes.length}
                 </Typography>
@@ -434,7 +471,23 @@ function AppContent() {
                   Total Earthquakes
                 </Typography>
               </Box>
-              <Box sx={{ minWidth: 120, textAlign: "center" }}>
+              <Box
+                sx={{
+                  minWidth: 140,
+                  textAlign: "center",
+                  p: 2,
+                  borderRadius: 3,
+                  bgcolor: "background.paper",
+                  boxShadow: 3,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                <span role="img" aria-label="strongest">
+                  💥
+                </span>
                 <Typography variant="h6" color="error.main" fontWeight={700}>
                   {earthquakes.length > 0
                     ? Math.max(...earthquakes.map((e) => e.mag)).toFixed(1)
@@ -444,7 +497,23 @@ function AppContent() {
                   Strongest Magnitude
                 </Typography>
               </Box>
-              <Box sx={{ minWidth: 120, textAlign: "center" }}>
+              <Box
+                sx={{
+                  minWidth: 140,
+                  textAlign: "center",
+                  p: 2,
+                  borderRadius: 3,
+                  bgcolor: "background.paper",
+                  boxShadow: 3,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
+                <span role="img" aria-label="recent">
+                  ⏰
+                </span>
                 <Typography variant="h6" color="info.main" fontWeight={700}>
                   {
                     earthquakes.filter((e) => {
@@ -486,6 +555,10 @@ function AppContent() {
                     0.15
                   )}`,
                   transition: "all 0.2s",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  zIndex: 1,
                 }}
                 onMouseOver={(e) =>
                   (e.currentTarget.style.background =
@@ -496,6 +569,9 @@ function AppContent() {
                     theme.palette.primary.main)
                 }
               >
+                <span role="img" aria-label="map">
+                  🗺️
+                </span>{" "}
                 View Live Map
               </button>
             </Box>
