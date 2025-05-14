@@ -13,6 +13,8 @@ import {
   Stack,
   IconButton,
   Tooltip as MuiTooltip,
+  Slider,
+  Button,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import {
@@ -32,16 +34,12 @@ import {
   ReferenceLine,
   Brush,
 } from "recharts";
-import {
-  format,
-  subDays,
-  parseISO,
-  differenceInHours,
-} from "date-fns";
+import { format, subDays, parseISO, differenceInHours } from "date-fns";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 import WarningIcon from "@mui/icons-material/Warning";
 import InfoIcon from "@mui/icons-material/Info";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import type { Earthquake } from "../types/earthquake";
 import React from "react";
 import { alpha, useTheme } from "@mui/material/styles";
@@ -117,7 +115,11 @@ const StatCard = ({
 //   payload?: Array<{ name: string; value: string | number; color: string }>;
 //   label?: string;
 // }
-const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
+const CustomTooltip: React.FC<CustomTooltipProps> = ({
+  active,
+  payload,
+  label,
+}) => {
   if (active && payload && payload.length) {
     return (
       <Paper
@@ -146,6 +148,39 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
   const [selectedMagnitude, setSelectedMagnitude] = useState<string | null>(
     null
   );
+  // New: magnitude and depth filter state
+  const [magRange, setMagRange] = useState<number[]>([0, 10]);
+  const [depthRange, setDepthRange] = useState<number[]>([0, 100]);
+
+  // CSV download handler
+  const handleDownloadCSV = () => {
+    const header = [
+      "Date/Time",
+      "Title",
+      "Magnitude",
+      "Depth (km)",
+      "Closest City",
+    ];
+    const rows = filteredEarthquakes.map((eq) => [
+      new Date(eq.date_time).toLocaleString(),
+      eq.title,
+      eq.mag,
+      eq.depth,
+      eq.location_properties.closestCity.name,
+    ]);
+    const csvContent = [header, ...rows]
+      .map((row) =>
+        row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",")
+      )
+      .join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `earthquakes_${Date.now()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const handleTimeRangeChange = (event: SelectChangeEvent) => {
     setTimeRange(event.target.value);
@@ -155,12 +190,20 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
     setSelectedMagnitude(data.range === selectedMagnitude ? null : data.range);
   };
 
+  // Filtered earthquakes with magnitude and depth
   const filteredEarthquakes = useMemo(() => {
     const now = new Date();
     const days = parseInt(timeRange);
     const startDate = subDays(now, days);
-    return earthquakes.filter((eq) => parseISO(eq.date_time) >= startDate);
-  }, [earthquakes, timeRange]);
+    return earthquakes.filter(
+      (eq) =>
+        parseISO(eq.date_time) >= startDate &&
+        eq.mag >= magRange[0] &&
+        eq.mag <= magRange[1] &&
+        eq.depth >= depthRange[0] &&
+        eq.depth <= depthRange[1]
+    );
+  }, [earthquakes, timeRange, magRange, depthRange]);
 
   // Key Statistics
   const stats = useMemo(() => {
@@ -284,7 +327,7 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
   return (
     <Box
       sx={{
-        p: { xs: 2, md: 3 },
+        p: { xs: 1, sm: 2, md: 3 },
         borderRadius: 6,
         background: `linear-gradient(120deg, ${theme.palette.primary.light} 0%, ${theme.palette.secondary.light} 100%)`,
         boxShadow:
@@ -300,7 +343,7 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
           left: 0,
           width: "100%",
           height: "100%",
-          background: "rgba(255,255,255,0.12)", // lighter overlay
+          background: "rgba(255,255,255,0.12)",
           zIndex: 0,
         },
         zIndex: 1,
@@ -312,14 +355,74 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
         },
       }}
     >
-      {/* Floating Stats Bar */}
+      {/* Responsive: Download/Filters section stacks on xs */}
       <Box
         sx={{
           display: "flex",
-          gap: 3,
-          mb: 4,
-          justifyContent: "center",
           flexWrap: "wrap",
+          gap: 2,
+          mb: 3,
+          alignItems: "center",
+          justifyContent: { xs: "center", sm: "space-between" },
+        }}
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<FileDownloadIcon />}
+          onClick={handleDownloadCSV}
+          sx={{ borderRadius: 3, fontWeight: 600, minWidth: 160 }}
+        >
+          Download CSV
+        </Button>
+        <Box
+          sx={{ minWidth: 220, width: { xs: "100%", sm: 220 }, maxWidth: 400 }}
+        >
+          <Typography variant="body2" sx={{ mb: 0.5 }}>
+            Magnitude Range
+          </Typography>
+          <Slider
+            value={magRange}
+            onChange={(_, v) => setMagRange(v as number[])}
+            min={0}
+            max={10}
+            step={0.1}
+            valueLabelDisplay="auto"
+            marks={[
+              { value: 0, label: "0" },
+              { value: 10, label: "10" },
+            ]}
+            sx={{ mb: 1 }}
+          />
+          <Typography variant="body2" sx={{ mb: 0.5 }}>
+            Depth Range (km)
+          </Typography>
+          <Slider
+            value={depthRange}
+            onChange={(_, v) => setDepthRange(v as number[])}
+            min={0}
+            max={100}
+            step={1}
+            valueLabelDisplay="auto"
+            marks={[
+              { value: 0, label: "0" },
+              { value: 100, label: "100" },
+            ]}
+          />
+        </Box>
+      </Box>
+
+      {/* Floating Stats Bar - responsive grid */}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            sm: "1fr 1fr",
+            md: "repeat(4, 1fr)",
+          },
+          gap: 2,
+          mb: 4,
           position: "relative",
           zIndex: 2,
         }}
@@ -438,6 +541,7 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
         </Paper>
       </Box>
 
+      {/* Responsive: Title/Time Range controls */}
       <Box
         sx={{
           mb: 3,
@@ -452,7 +556,7 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
           variant="h5"
           component="h2"
           gutterBottom
-          sx={{ mb: { xs: 1, sm: 0 } }}
+          sx={{ mb: { xs: 1, sm: 0 }, textAlign: { xs: "center", sm: "left" } }}
         >
           Earthquake Analytics
         </Typography>
@@ -461,9 +565,10 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
             display: "flex",
             gap: 2,
             flexDirection: { xs: "column", sm: "row" },
+            width: { xs: "100%", sm: "auto" },
           }}
         >
-          <FormControl sx={{ minWidth: 120 }}>
+          <FormControl sx={{ minWidth: 120, width: { xs: "100%", sm: 120 } }}>
             <InputLabel>Time Range</InputLabel>
             <Select
               value={timeRange}
@@ -478,7 +583,7 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
         </Box>
       </Box>
 
-      {/* Key Statistics */}
+      {/* Key Statistics - responsive grid */}
       <Box
         sx={{
           display: "grid",
@@ -518,14 +623,11 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
         />
       </Box>
 
-      {/* Main Charts */}
+      {/* Main Charts - responsive grid */}
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            md: "repeat(2, 1fr)",
-          },
+          gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
           gap: 3,
         }}
       >
