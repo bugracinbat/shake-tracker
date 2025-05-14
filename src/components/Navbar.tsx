@@ -17,6 +17,9 @@ import {
   TextField,
   InputAdornment,
   Tooltip,
+  Avatar,
+  Fade,
+  Slide,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -26,29 +29,34 @@ import {
   Search as SearchIcon,
   Info as InfoIcon,
   Settings as SettingsIcon,
+  LocationOn as LocationIcon,
+  Timeline as TimelineIcon,
+  Home as HomeIcon,
 } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
-import { styled } from "@mui/material/styles";
+import { styled, alpha } from "@mui/material/styles";
 import type { Earthquake } from "../types/earthquake";
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   backgroundColor:
     theme.palette.mode === "dark"
-      ? "rgba(18, 18, 18, 0.8)"
-      : "rgba(255, 255, 255, 0.8)",
-  backdropFilter: "blur(8px)",
+      ? alpha(theme.palette.background.paper, 0.8)
+      : alpha(theme.palette.background.paper, 0.9),
+  backdropFilter: "blur(12px)",
   boxShadow:
     theme.palette.mode === "dark"
       ? "0 4px 20px rgba(0, 0, 0, 0.3)"
       : "0 4px 20px rgba(0, 0, 0, 0.1)",
   transition: "all 0.3s ease-in-out",
   color: theme.palette.text.primary,
+  borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
 }));
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
   padding: theme.spacing(1, 2),
+  minHeight: 64,
 }));
 
 const NavButton = styled(Button)<{
@@ -57,11 +65,76 @@ const NavButton = styled(Button)<{
 }>(({ theme }) => ({
   color: theme.palette.text.primary,
   padding: theme.spacing(1, 2),
-  borderRadius: theme.spacing(1),
+  borderRadius: theme.spacing(2),
   transition: "all 0.2s ease-in-out",
+  position: "relative",
+  overflow: "hidden",
   "&:hover": {
-    backgroundColor: theme.palette.action.hover,
+    backgroundColor: alpha(theme.palette.primary.main, 0.1),
     transform: "translateY(-1px)",
+  },
+  "&::after": {
+    content: '""',
+    position: "absolute",
+    bottom: 0,
+    left: "50%",
+    width: 0,
+    height: 2,
+    backgroundColor: theme.palette.primary.main,
+    transition: "all 0.3s ease-in-out",
+    transform: "translateX(-50%)",
+  },
+  "&:hover::after": {
+    width: "80%",
+  },
+}));
+
+const StyledMenu = styled(Menu)(({ theme }) => ({
+  "& .MuiPaper-root": {
+    borderRadius: theme.spacing(2),
+    marginTop: theme.spacing(1),
+    minWidth: 280,
+    boxShadow:
+      theme.palette.mode === "dark"
+        ? "0 4px 20px rgba(0, 0, 0, 0.3)"
+        : "0 4px 20px rgba(0, 0, 0, 0.1)",
+    border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+    "& .MuiList-root": {
+      padding: theme.spacing(1),
+    },
+    "& .MuiMenuItem-root": {
+      borderRadius: theme.spacing(1),
+      margin: theme.spacing(0.5, 0),
+      padding: theme.spacing(1, 2),
+      "&:hover": {
+        backgroundColor: alpha(theme.palette.primary.main, 0.1),
+      },
+    },
+  },
+}));
+
+const SearchField = styled(TextField)(({ theme }) => ({
+  "& .MuiOutlinedInput-root": {
+    borderRadius: theme.spacing(2),
+    backgroundColor: alpha(theme.palette.background.paper, 0.8),
+    backdropFilter: "blur(8px)",
+    transition: "all 0.2s ease-in-out",
+    "& fieldset": {
+      borderColor: alpha(theme.palette.divider, 0.1),
+    },
+    "&:hover fieldset": {
+      borderColor: theme.palette.primary.main,
+    },
+    "&.Mui-focused fieldset": {
+      borderColor: theme.palette.primary.main,
+    },
+  },
+  "& .MuiInputBase-input": {
+    color: theme.palette.text.primary,
+  },
+  "& .MuiInputBase-input::placeholder": {
+    color: theme.palette.text.secondary,
+    opacity: 0.7,
   },
 }));
 
@@ -130,8 +203,15 @@ const Navbar = ({
               fontWeight: 700,
               letterSpacing: "-0.5px",
               cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              "&:hover": {
+                color: "primary.main",
+              },
             }}
           >
+            <LocationIcon color="primary" />
             ShakeTracker
           </Typography>
 
@@ -144,10 +224,11 @@ const Navbar = ({
               >
                 <MenuIcon />
               </IconButton>
-              <Menu
+              <StyledMenu
                 anchorEl={mobileMenuAnchor}
                 open={Boolean(mobileMenuAnchor)}
                 onClose={handleMobileMenuClose}
+                TransitionComponent={Fade}
               >
                 <MenuItem
                   onClick={() => {
@@ -156,7 +237,10 @@ const Navbar = ({
                   }}
                   selected={isActive("/")}
                 >
-                  Home
+                  <ListItemIcon>
+                    <HomeIcon color={isActive("/") ? "primary" : "inherit"} />
+                  </ListItemIcon>
+                  <ListItemText primary="Home" />
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
@@ -165,28 +249,50 @@ const Navbar = ({
                   }}
                   selected={isActive("/analytics")}
                 >
-                  Analytics
+                  <ListItemIcon>
+                    <TimelineIcon
+                      color={isActive("/analytics") ? "primary" : "inherit"}
+                    />
+                  </ListItemIcon>
+                  <ListItemText primary="Analytics" />
                 </MenuItem>
-              </Menu>
+                <Divider />
+                <MenuItem onClick={handleMobileMenuClose}>
+                  <ListItemIcon>
+                    <SettingsIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Settings" />
+                </MenuItem>
+                <MenuItem onClick={handleMobileMenuClose}>
+                  <ListItemIcon>
+                    <InfoIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="About" />
+                </MenuItem>
+              </StyledMenu>
             </>
           ) : (
             <Box sx={{ display: "flex", gap: 1 }}>
               <NavButton
                 onClick={() => navigate("/")}
+                startIcon={<HomeIcon />}
                 sx={{
                   backgroundColor: isActive("/")
-                    ? theme.palette.action.selected
+                    ? alpha(theme.palette.primary.main, 0.1)
                     : "transparent",
+                  color: isActive("/") ? "primary.main" : "inherit",
                 }}
               >
                 Home
               </NavButton>
               <NavButton
                 onClick={() => navigate("/analytics")}
+                startIcon={<TimelineIcon />}
                 sx={{
                   backgroundColor: isActive("/analytics")
-                    ? theme.palette.action.selected
+                    ? alpha(theme.palette.primary.main, 0.1)
                     : "transparent",
+                  color: isActive("/analytics") ? "primary.main" : "inherit",
                 }}
               >
                 Analytics
@@ -196,35 +302,12 @@ const Navbar = ({
         </Box>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <TextField
+          <SearchField
             size="small"
             placeholder="Search earthquakes..."
             value={searchQuery}
             onChange={handleSearch}
-            sx={{
-              width: 300,
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 2,
-                backgroundColor: theme.palette.background.paper,
-                color: theme.palette.text.primary,
-                "& fieldset": {
-                  borderColor: theme.palette.divider,
-                },
-                "&:hover fieldset": {
-                  borderColor: theme.palette.primary.main,
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: theme.palette.primary.main,
-                },
-              },
-              "& .MuiInputBase-input": {
-                color: theme.palette.text.primary,
-              },
-              "& .MuiInputBase-input::placeholder": {
-                color: theme.palette.text.secondary,
-                opacity: 0.7,
-              },
-            }}
+            sx={{ width: 300 }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -239,11 +322,11 @@ const Navbar = ({
               color="inherit"
               onClick={handleNotificationsOpen}
               sx={{
-                transition: "transform 0.2s ease-in-out",
+                transition: "all 0.2s ease-in-out",
                 color: theme.palette.text.primary,
                 "&:hover": {
                   transform: "scale(1.1)",
-                  backgroundColor: theme.palette.action.hover,
+                  backgroundColor: alpha(theme.palette.primary.main, 0.1),
                 },
               }}
             >
@@ -267,11 +350,11 @@ const Navbar = ({
               color="inherit"
               onClick={handleMobileMenuOpen}
               sx={{
-                transition: "transform 0.2s ease-in-out",
+                transition: "all 0.2s ease-in-out",
                 color: theme.palette.text.primary,
                 "&:hover": {
                   transform: "scale(1.1)",
-                  backgroundColor: theme.palette.action.hover,
+                  backgroundColor: alpha(theme.palette.primary.main, 0.1),
                 },
               }}
             >
@@ -284,11 +367,11 @@ const Navbar = ({
               color="inherit"
               onClick={onThemeChange}
               sx={{
-                transition: "transform 0.2s ease-in-out",
+                transition: "all 0.2s ease-in-out",
                 color: theme.palette.text.primary,
                 "&:hover": {
                   transform: "rotate(180deg)",
-                  backgroundColor: theme.palette.action.hover,
+                  backgroundColor: alpha(theme.palette.primary.main, 0.1),
                 },
               }}
             >
@@ -298,50 +381,11 @@ const Navbar = ({
         </Box>
       </StyledToolbar>
 
-      <Menu
-        anchorEl={mobileMenuAnchor}
-        open={Boolean(mobileMenuAnchor)}
-        onClose={handleMobileMenuClose}
-        PaperProps={{
-          sx: {
-            mt: 1,
-            minWidth: 200,
-            borderRadius: 2,
-            boxShadow:
-              theme.palette.mode === "dark"
-                ? "0 4px 20px rgba(0, 0, 0, 0.3)"
-                : "0 4px 20px rgba(0, 0, 0, 0.1)",
-          },
-        }}
-      >
-        <MenuItem onClick={handleMobileMenuClose}>
-          <SettingsIcon sx={{ mr: 1 }} /> Settings
-        </MenuItem>
-        <MenuItem onClick={handleMobileMenuClose}>
-          <InfoIcon sx={{ mr: 1 }} /> About
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={handleMobileMenuClose}>
-          <DarkModeIcon sx={{ mr: 1 }} /> Theme Settings
-        </MenuItem>
-      </Menu>
-
-      <Menu
+      <StyledMenu
         anchorEl={notificationsAnchor}
         open={Boolean(notificationsAnchor)}
         onClose={handleNotificationsClose}
-        PaperProps={{
-          sx: {
-            mt: 1,
-            minWidth: 300,
-            maxHeight: 400,
-            borderRadius: 2,
-            boxShadow:
-              theme.palette.mode === "dark"
-                ? "0 4px 20px rgba(0, 0, 0, 0.3)"
-                : "0 4px 20px rgba(0, 0, 0, 0.1)",
-          },
-        }}
+        TransitionComponent={Fade}
       >
         <Box sx={{ p: 2 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
@@ -352,9 +396,11 @@ const Navbar = ({
               key={earthquake._id}
               sx={{
                 py: 1,
-                borderBottom: `1px solid ${theme.palette.divider}`,
-                "&:last-child": {
-                  borderBottom: "none",
+                px: 2,
+                borderRadius: 1,
+                transition: "all 0.2s ease-in-out",
+                "&:hover": {
+                  backgroundColor: alpha(theme.palette.primary.main, 0.1),
                 },
               }}
             >
@@ -368,7 +414,7 @@ const Navbar = ({
             </Box>
           ))}
         </Box>
-      </Menu>
+      </StyledMenu>
     </StyledAppBar>
   );
 };
