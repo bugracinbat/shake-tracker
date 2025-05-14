@@ -17,7 +17,6 @@ import {
   TextField,
   InputAdornment,
   Tooltip,
-  Avatar,
   Fade,
 } from "@mui/material";
 import {
@@ -62,6 +61,19 @@ const StyledAppBar = styled(AppBar)(({ theme }) => ({
   position: "sticky",
   top: 16,
   zIndex: 1100,
+  overflowX: "hidden", // Prevent horizontal overflow always
+  [theme.breakpoints.down("sm")]: {
+    margin: "12px 0 16px 0",
+    maxWidth: "100vw",
+    width: "100vw",
+    left: 0,
+    right: 0,
+    borderRadius: 0,
+    minWidth: 0,
+    boxSizing: "border-box",
+    overflowX: "hidden", // Extra safety for mobile
+    transition: "none", // Remove transitions on mobile to prevent overflow
+  },
 }));
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
@@ -70,6 +82,17 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   alignItems: "center",
   padding: theme.spacing(1.5, 3),
   minHeight: 72,
+  overflowX: "hidden", // Prevent horizontal overflow always
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(1, 1),
+    minHeight: 56,
+    flexWrap: "wrap",
+    gap: theme.spacing(1),
+    boxSizing: "border-box",
+    overflowX: "hidden", // Extra safety for mobile
+    transition: "none", // Remove transitions on mobile
+    maxWidth: "100vw",
+  },
 }));
 
 const NavButton = styled(Button)<{
@@ -220,7 +243,16 @@ const Navbar = ({
       aria-label="Main Navigation"
     >
       <StyledToolbar>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            minWidth: 0,
+            flex: 1,
+            overflowX: { xs: "auto", sm: "visible" },
+          }}
+        >
           <Typography
             variant="h6"
             onClick={() => navigate("/")}
@@ -344,7 +376,17 @@ const Navbar = ({
           )}
         </Box>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            minWidth: 0,
+            flex: 1,
+            justifyContent: { xs: "flex-end", sm: "flex-end" },
+            overflowX: { xs: "auto", sm: "visible" },
+          }}
+        >
           <SearchField
             size="small"
             placeholder="Search earthquakes..."
@@ -417,15 +459,6 @@ const Navbar = ({
             >
               {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
             </IconButton>
-          </Tooltip>
-
-          {/* Example avatar/profile menu for future extensibility */}
-          <Tooltip title="Profile (coming soon)">
-            <span>
-              <IconButton color="inherit" disabled aria-label="User profile">
-                <Avatar sx={{ width: 32, height: 32 }}>U</Avatar>
-              </IconButton>
-            </span>
           </Tooltip>
         </Box>
       </StyledToolbar>

@@ -9,10 +9,10 @@ import {
   Rating,
   TextField,
   CircularProgress,
-  Divider,
   Chip,
   Collapse,
   IconButton,
+  Stack,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -22,7 +22,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(3),
+  padding: theme.spacing(2),
   borderRadius: "12px",
   boxShadow:
     theme.palette.mode === "dark"
@@ -34,6 +34,15 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
       : "rgba(255, 255, 255, 0.8)",
   color: theme.palette.text.primary,
   backdropFilter: theme.palette.mode === "dark" ? undefined : "blur(8px)",
+  width: '100%',
+  maxWidth: '100%', // Make survey full width
+  margin: 0, // Remove auto margin
+  boxSizing: 'border-box',
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(1),
+    borderRadius: 8,
+    boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+  },
 }));
 
 const ResponseCard = styled(Paper)(({ theme }) => ({
@@ -41,7 +50,9 @@ const ResponseCard = styled(Paper)(({ theme }) => ({
   marginBottom: theme.spacing(1),
   transition: "transform 0.2s ease-in-out",
   backgroundColor:
-    theme.palette.mode === "dark" ? theme.palette.background.default : "#fff",
+    theme.palette.mode === "dark"
+      ? theme.palette.background.default
+      : "#fff",
   color: theme.palette.text.primary,
   boxShadow:
     theme.palette.mode === "dark"
@@ -53,6 +64,10 @@ const ResponseCard = styled(Paper)(({ theme }) => ({
       theme.palette.mode === "dark"
         ? "0 4px 16px rgba(0,0,0,0.5)"
         : "0 4px 8px rgba(0, 0, 0, 0.15)",
+  },
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(1),
+    borderRadius: 6,
   },
 }));
 
@@ -73,6 +88,10 @@ const SurveyHeader = styled(Box)(({ theme }) => ({
       theme.palette.mode === "dark"
         ? theme.palette.background.paper
         : theme.palette.action.selected,
+  },
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(1),
+    borderRadius: 6,
   },
 }));
 
@@ -170,11 +189,11 @@ const EarthquakeSurvey = () => {
   return (
     <StyledPaper>
       <SurveyHeader onClick={() => setIsExpanded(!isExpanded)}>
-        <Box>
-          <Typography variant="h5" sx={{ fontWeight: 700 }}>
+        <Box sx={{ minWidth: 0, flex: 1 }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, fontSize: { xs: 18, sm: 22 } }}>
             Earthquake Experience Survey
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: 14, sm: 16 } }}>
             Help us understand the impact of recent earthquakes in your area
           </Typography>
         </Box>
@@ -182,61 +201,60 @@ const EarthquakeSurvey = () => {
           {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
       </SurveyHeader>
-
       <Collapse in={isExpanded}>
-        <Box sx={{ mt: 2 }}>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
+        <Box sx={{ mt: 2, width: '100%' }}>
+          <Box sx={{ mb: 3, display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, alignItems: { sm: 'center' } }}>
+            <Typography variant="subtitle1" sx={{ mb: { xs: 1, sm: 0 }, fontWeight: 600, fontSize: { xs: 15, sm: 17 } }}>
               Did you feel a recent earthquake?
             </Typography>
-            <Button
-              variant={felt === true ? "contained" : "outlined"}
-              onClick={() => setFelt(true)}
-              sx={{ mr: 2, minWidth: 100 }}
-            >
-              Yes
-            </Button>
-            <Button
-              variant={felt === false ? "contained" : "outlined"}
-              onClick={() => setFelt(false)}
-              sx={{ minWidth: 100 }}
-            >
-              No
-            </Button>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button
+                variant={felt === true ? "contained" : "outlined"}
+                onClick={() => setFelt(true)}
+                sx={{ minWidth: 80, fontSize: { xs: 13, sm: 15 } }}
+              >
+                Yes
+              </Button>
+              <Button
+                variant={felt === false ? "contained" : "outlined"}
+                onClick={() => setFelt(false)}
+                sx={{ minWidth: 80, fontSize: { xs: 13, sm: 15 } }}
+              >
+                No
+              </Button>
+            </Box>
           </Box>
-
           {felt && (
             <>
               <Box sx={{ mb: 3 }}>
-                <Typography component="legend" sx={{ mb: 1, fontWeight: 600 }}>
+                <Typography component="legend" sx={{ mb: 1, fontWeight: 600, fontSize: { xs: 15, sm: 17 } }}>
                   How strong was it?
                 </Typography>
                 <Rating
                   value={intensity}
                   onChange={(_, newValue) => setIntensity(newValue || 0)}
                   max={10}
-                  sx={{ mb: 1 }}
+                  sx={{ mb: 1, fontSize: { xs: 20, sm: 28 } }}
                 />
                 {intensity > 0 && (
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: 13, sm: 15 } }}>
                     {getIntensityLabel(intensity)}
                   </Typography>
                 )}
               </Box>
-
               <TextField
                 fullWidth
                 label="Your Location"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                sx={{ mb: 2 }}
+                sx={{ mb: 2, fontSize: { xs: 13, sm: 15 } }}
                 InputProps={{
                   startAdornment: (
                     <LocationOnIcon sx={{ mr: 1, color: "text.secondary" }} />
                   ),
                 }}
+                inputProps={{ style: { fontSize: 14 } }}
               />
-
               <TextField
                 fullWidth
                 label="Additional Comments"
@@ -248,20 +266,33 @@ const EarthquakeSurvey = () => {
                     setComments(e.target.value);
                   }
                 }}
-                sx={{ mb: 1 }}
+                sx={{ mb: 1, fontSize: { xs: 13, sm: 15 } }}
                 helperText={`${comments.length}/${MAX_COMMENT_LENGTH} characters`}
+                inputProps={{ style: { fontSize: 14 } }}
               />
             </>
           )}
-
-          <Box sx={{ mt: 3, mb: 3 }}>
+          <Box
+            sx={{
+              mt: 3,
+              mb: 3,
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              gap: 2,
+              justifyContent: { xs: 'stretch', sm: 'flex-end' },
+              alignItems: { xs: 'stretch', sm: 'center' },
+            }}
+          >
             <Button
               variant="contained"
               onClick={handleSubmit}
-              disabled={
-                felt === null || (felt && intensity === 0) || isSubmitting
-              }
-              sx={{ mr: 2 }}
+              disabled={felt === null || (felt && intensity === 0) || isSubmitting}
+              sx={{
+                fontSize: { xs: 14, sm: 16 },
+                minWidth: 120,
+                flex: { xs: 1, sm: 'unset' },
+                order: { xs: 1, sm: 1 },
+              }}
             >
               {isSubmitting ? (
                 <>
@@ -272,84 +303,77 @@ const EarthquakeSurvey = () => {
                 "Submit Response"
               )}
             </Button>
-
             {responses.length > 0 && (
-              <Button variant="outlined" color="error" onClick={clearResponses}>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={clearResponses}
+                sx={{
+                  fontSize: { xs: 14, sm: 16 },
+                  minWidth: 120,
+                  flex: { xs: 1, sm: 'unset' },
+                  order: { xs: 2, sm: 2 },
+                }}
+              >
                 Clear All Responses
               </Button>
             )}
           </Box>
         </Box>
       </Collapse>
-
+      {/* Responsive: Recent Responses */}
       {responses.length > 0 && (
         <Box sx={{ mt: 4 }}>
-          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+          <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, fontSize: { xs: 16, sm: 18 } }}>
             Recent Responses
           </Typography>
-          <Divider sx={{ mb: 2 }} />
-          {responses.slice(-3).map((response, index) => (
-            <ResponseCard key={index}>
-              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                <Chip
-                  label={response.felt ? "Felt" : "Not Felt"}
-                  color={response.felt ? "primary" : "default"}
-                  size="small"
-                  sx={{ mr: 1 }}
-                />
-                <AccessTimeIcon
-                  sx={{ fontSize: 16, mr: 0.5, color: "text.secondary" }}
-                />
-                <Typography variant="body2" color="text.secondary">
-                  {new Date(response.timestamp).toLocaleString()}
-                </Typography>
-              </Box>
-              {response.felt && (
-                <>
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                    <Typography variant="body2" sx={{ mr: 1 }}>
-                      Intensity:
-                    </Typography>
-                    <Rating value={response.intensity} readOnly size="small" />
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ ml: 1 }}
-                    >
-                      ({getIntensityLabel(response.intensity)})
-                    </Typography>
-                  </Box>
-                  {response.location && (
-                    <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                      <LocationOnIcon
-                        sx={{ fontSize: 16, mr: 0.5, color: "text.secondary" }}
-                      />
-                      <Typography variant="body2">
-                        {response.location}
+          <Stack spacing={1}>
+            {responses.slice(-3).map((response, index) => (
+              <ResponseCard key={index}>
+                <Box sx={{ display: "flex", alignItems: "center", mb: 1, flexWrap: 'wrap', gap: 1 }}>
+                  <Chip
+                    label={response.felt ? "Felt" : "Not Felt"}
+                    color={response.felt ? "primary" : "default"}
+                    size="small"
+                    sx={{ mr: 1, fontSize: { xs: 12, sm: 14 } }}
+                  />
+                  <AccessTimeIcon sx={{ fontSize: 16, mr: 0.5, color: "text.secondary" }} />
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: 12, sm: 14 } }}>
+                    {new Date(response.timestamp).toLocaleString()}
+                  </Typography>
+                </Box>
+                {response.felt && (
+                  <>
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 1, flexWrap: 'wrap', gap: 1 }}>
+                      <Typography variant="body2" sx={{ mr: 1, fontSize: { xs: 12, sm: 14 } }}>
+                        Intensity:
+                      </Typography>
+                      <Rating value={response.intensity} readOnly size="small" sx={{ fontSize: { xs: 16, sm: 20 } }} />
+                      <Typography variant="body2" color="text.secondary" sx={{ ml: 1, fontSize: { xs: 12, sm: 14 } }}>
+                        ({getIntensityLabel(response.intensity)})
                       </Typography>
                     </Box>
-                  )}
-                  {response.comments && (
-                    <Box
-                      sx={{ display: "flex", alignItems: "flex-start", mt: 1 }}
-                    >
-                      <CommentIcon
-                        sx={{
-                          fontSize: 16,
-                          mr: 0.5,
-                          mt: 0.5,
-                          color: "text.secondary",
-                        }}
-                      />
-                      <Typography variant="body2">
-                        {response.comments}
-                      </Typography>
-                    </Box>
-                  )}
-                </>
-              )}
-            </ResponseCard>
-          ))}
+                    {response.location && (
+                      <Box sx={{ display: "flex", alignItems: "center", mb: 1, flexWrap: 'wrap', gap: 1 }}>
+                        <LocationOnIcon sx={{ fontSize: 16, mr: 0.5, color: "text.secondary" }} />
+                        <Typography variant="body2" sx={{ fontSize: { xs: 12, sm: 14 } }}>
+                          {response.location}
+                        </Typography>
+                      </Box>
+                    )}
+                    {response.comments && (
+                      <Box sx={{ display: "flex", alignItems: "flex-start", mt: 1, flexWrap: 'wrap', gap: 1 }}>
+                        <CommentIcon sx={{ fontSize: 16, mr: 0.5, mt: 0.5, color: "text.secondary" }} />
+                        <Typography variant="body2" sx={{ fontSize: { xs: 12, sm: 14 } }}>
+                          {response.comments}
+                        </Typography>
+                      </Box>
+                    )}
+                  </>
+                )}
+              </ResponseCard>
+            ))}
+          </Stack>
         </Box>
       )}
 
