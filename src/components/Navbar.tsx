@@ -28,7 +28,7 @@ import {
   Brightness7 as LightModeIcon,
   Search as SearchIcon,
   Info as InfoIcon,
-  Settings as SettingsIcon,
+
   LocationOn as LocationIcon,
   Timeline as TimelineIcon,
   Home as HomeIcon,
@@ -38,25 +38,31 @@ import { styled, alpha } from "@mui/material/styles";
 import type { Earthquake } from "../types/earthquake";
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  backgroundColor:
-    theme.palette.mode === "dark"
-      ? alpha(theme.palette.background.paper, 0.8)
-      : alpha(theme.palette.background.paper, 0.9),
-  backdropFilter: "blur(12px)",
-  boxShadow:
-    theme.palette.mode === "dark"
-      ? "0 4px 20px rgba(0, 0, 0, 0.3)"
-      : "0 4px 20px rgba(0, 0, 0, 0.1)",
-  transition: "all 0.3s ease-in-out",
+  background: theme.palette.mode === "dark"
+    ? `linear-gradient(90deg, ${alpha(theme.palette.background.paper, 0.95)} 60%, ${alpha(theme.palette.primary.dark, 0.7)} 100%)`
+    : `linear-gradient(90deg, ${alpha(theme.palette.background.paper, 0.92)} 60%, ${alpha(theme.palette.primary.light, 0.7)} 100%)`,
+  backdropFilter: "blur(18px)",
+  boxShadow: theme.palette.mode === "dark"
+    ? "0 8px 32px rgba(0,0,0,0.28)"
+    : "0 8px 32px rgba(33,150,243,0.10)",
+  borderRadius: 28,
+  margin: '24px auto 32px auto',
+  maxWidth: '1200px',
+  width: 'calc(100% - 32px)',
   color: theme.palette.text.primary,
-  borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+  border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
+  transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+  position: 'sticky',
+  top: 16,
+  zIndex: 1100,
 }));
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
-  padding: theme.spacing(1, 2),
-  minHeight: 64,
+  alignItems: "center",
+  padding: theme.spacing(1.5, 3),
+  minHeight: 72,
 }));
 
 const NavButton = styled(Button)<{
@@ -64,14 +70,23 @@ const NavButton = styled(Button)<{
   to?: string;
 }>(({ theme }) => ({
   color: theme.palette.text.primary,
-  padding: theme.spacing(1, 2),
-  borderRadius: theme.spacing(2),
-  transition: "all 0.2s ease-in-out",
+  padding: theme.spacing(1.1, 2.5),
+  borderRadius: theme.spacing(3),
+  fontWeight: 600,
+  letterSpacing: '0.02em',
+  fontSize: 17,
+  background: 'transparent',
+  transition: "all 0.22s cubic-bezier(0.4, 0, 0.2, 1)",
   position: "relative",
   overflow: "hidden",
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.primary.main, 0.1),
-    transform: "translateY(-1px)",
+  boxShadow: 'none',
+  '&:hover, &:focus': {
+    backgroundColor: alpha(theme.palette.primary.main, 0.12),
+    color: theme.palette.primary.main,
+    transform: "translateY(-2px) scale(1.04)",
+    boxShadow: theme.palette.mode === 'dark'
+      ? `0 2px 8px ${alpha(theme.palette.primary.dark, 0.20)}`
+      : `0 2px 8px ${alpha(theme.palette.primary.main, 0.10)}`,
   },
   "&::after": {
     content: '""',
@@ -81,11 +96,11 @@ const NavButton = styled(Button)<{
     width: 0,
     height: 2,
     backgroundColor: theme.palette.primary.main,
-    transition: "all 0.3s ease-in-out",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
     transform: "translateX(-50%)",
   },
   "&:hover::after": {
-    width: "80%",
+    width: "85%",
   },
 }));
 
@@ -345,22 +360,6 @@ const Navbar = ({
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="Settings">
-            <IconButton
-              color="inherit"
-              onClick={handleMobileMenuOpen}
-              sx={{
-                transition: "all 0.2s ease-in-out",
-                color: theme.palette.text.primary,
-                "&:hover": {
-                  transform: "scale(1.1)",
-                  backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                },
-              }}
-            >
-              <SettingsIcon />
-            </IconButton>
-          </Tooltip>
 
           <Tooltip title={`Switch to ${darkMode ? "light" : "dark"} mode`}>
             <IconButton
