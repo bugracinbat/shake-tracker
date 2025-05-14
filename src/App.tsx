@@ -353,6 +353,91 @@ function AppContent() {
             </IconButton>
           </Tooltip>
         </Box>
+        {/* HERO SECTION */}
+        <Box
+          sx={{
+            width: '100%',
+            minHeight: { xs: 300, md: 380 },
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            background: `linear-gradient(120deg, ${theme.palette.primary.light} 0%, ${theme.palette.secondary.light} 100%)`,
+            borderRadius: 6,
+            mb: 5,
+            boxShadow: theme.palette.mode === 'dark'
+              ? `0 12px 48px ${alpha(theme.palette.common.black, 0.4)}`
+              : `0 12px 48px ${alpha(theme.palette.primary.main, 0.08)}`,
+            p: { xs: 4, md: 8 },
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          <Typography
+            variant="h2"
+            sx={{
+              fontWeight: 900,
+              color: theme.palette.primary.dark,
+              mb: 2,
+              textShadow: `0 2px 8px ${alpha(theme.palette.primary.main, 0.09)}`,
+              letterSpacing: '-1.5px',
+              textAlign: 'center',
+            }}
+          >
+            Shake Tracker
+          </Typography>
+          <Typography
+            variant="h5"
+            sx={{
+              color: theme.palette.text.primary,
+              mb: 2,
+              fontWeight: 500,
+              textAlign: 'center',
+              maxWidth: 600,
+            }}
+          >
+            Real-time earthquake monitoring, analytics, and community reporting. Stay safe and informed.
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{
+              color: theme.palette.text.secondary,
+              mb: 4,
+              textAlign: 'center',
+              maxWidth: 500,
+            }}
+          >
+            Explore recent seismic activity, view analytics, and share your experience with the community.
+          </Typography>
+          <Box>
+            <button
+              onClick={() => {
+                const mapSection = document.getElementById('earthquake-map-section');
+                if (mapSection) {
+                  mapSection.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              style={{
+                background: theme.palette.primary.main,
+                color: '#fff',
+                border: 'none',
+                borderRadius: 24,
+                padding: '12px 32px',
+                fontSize: 18,
+                fontWeight: 700,
+                letterSpacing: '0.5px',
+                cursor: 'pointer',
+                boxShadow: `0 2px 12px ${alpha(theme.palette.primary.main, 0.15)}`,
+                transition: 'all 0.2s',
+              }}
+              onMouseOver={e => (e.currentTarget.style.background = theme.palette.primary.dark)}
+              onMouseOut={e => (e.currentTarget.style.background = theme.palette.primary.main)}
+            >
+              View Live Map
+            </button>
+          </Box>
+        </Box>
+
         <StyledContainer>
           {loading && (
             <Box
@@ -382,24 +467,27 @@ function AppContent() {
           )}
 
           {!loading && !error && (
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 6 }}>
               <Routes>
                 <Route
                   path="/"
                   element={
                     <>
-                      <StyledPaper>
-                        <Typography
-                          variant="h5"
-                          sx={{
-                            mb: 3,
-                            fontWeight: 700,
-                            color: theme.palette.text.primary,
-                            letterSpacing: "-0.5px",
-                          }}
-                        >
-                          Live Earthquake Map
-                        </Typography>
+                      {/* Live Earthquake Map Section */}
+                      <StyledPaper id="earthquake-map-section" sx={{ mb: 4 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
+                          <span role="img" aria-label="map">🗺️</span>
+                          <Typography
+                            variant="h5"
+                            sx={{
+                              fontWeight: 700,
+                              color: theme.palette.text.primary,
+                              letterSpacing: "-0.5px",
+                            }}
+                          >
+                            Live Earthquake Map
+                          </Typography>
+                        </Box>
                         <EarthquakeMap
                           earthquakes={filteredEarthquakes}
                           selectedEarthquakeId={selectedEarthquakeId}
@@ -407,20 +495,24 @@ function AppContent() {
                         />
                       </StyledPaper>
 
+                      {/* Survey Section */}
                       <EarthquakeSurvey />
 
-                      <StyledPaper>
-                        <Typography
-                          variant="h5"
-                          sx={{
-                            mb: 3,
-                            fontWeight: 700,
-                            color: theme.palette.text.primary,
-                            letterSpacing: "-0.5px",
-                          }}
-                        >
-                          Recent Earthquakes
-                        </Typography>
+                      {/* Recent Earthquakes Section */}
+                      <StyledPaper sx={{ mt: 4 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
+                          <span role="img" aria-label="earthquake">🌐</span>
+                          <Typography
+                            variant="h5"
+                            sx={{
+                              fontWeight: 700,
+                              color: theme.palette.text.primary,
+                              letterSpacing: "-0.5px",
+                            }}
+                          >
+                            Recent Earthquakes
+                          </Typography>
+                        </Box>
                         <EarthquakeList
                           earthquakes={filteredEarthquakes}
                           selectedEarthquakeId={selectedEarthquakeId}
