@@ -363,12 +363,19 @@ function AppContent() {
               alignItems: "center",
               justifyContent: "center",
               flexDirection: "column",
-              background: `linear-gradient(120deg, ${theme.palette.primary.light} 0%, ${theme.palette.secondary.light} 100%)`,
+              // Fix hero background for dark mode
+              background:
+                theme.palette.mode === "dark"
+                  ? `linear-gradient(120deg, ${alpha(
+                      theme.palette.background.paper,
+                      0.96
+                    )} 0%, ${alpha(theme.palette.primary.dark, 0.7)} 100%)`
+                  : `linear-gradient(120deg, ${theme.palette.primary.light} 0%, ${theme.palette.secondary.light} 100%)`,
               borderRadius: 6,
               mb: 5,
               boxShadow:
                 theme.palette.mode === "dark"
-                  ? `0 12px 48px ${alpha(theme.palette.common.black, 0.4)}`
+                  ? `0 12px 48px ${alpha(theme.palette.common.black, 0.7)}`
                   : `0 12px 48px ${alpha(theme.palette.primary.main, 0.08)}`,
               p: { xs: 4, md: 8 },
               position: "relative",
@@ -384,7 +391,13 @@ function AppContent() {
                 width: 220,
                 height: 220,
                 borderRadius: "50%",
-                background: `radial-gradient(circle, ${theme.palette.primary.light} 0%, ${theme.palette.secondary.light} 100%)`,
+                background:
+                  theme.palette.mode === "dark"
+                    ? `radial-gradient(circle, ${alpha(
+                        theme.palette.primary.dark,
+                        0.5
+                      )} 0%, ${alpha(theme.palette.secondary.dark, 0.3)} 100%)`
+                    : `radial-gradient(circle, ${theme.palette.primary.light} 0%, ${theme.palette.secondary.light} 100%)`,
                 opacity: 0.18,
                 filter: "blur(8px)",
                 zIndex: 0,
@@ -399,12 +412,15 @@ function AppContent() {
               variant="h2"
               sx={{
                 fontWeight: 900,
-                color: theme.palette.primary.dark,
+                color:
+                  theme.palette.mode === "dark"
+                    ? theme.palette.primary.light
+                    : theme.palette.primary.dark,
                 mb: 2,
-                textShadow: `0 2px 8px ${alpha(
-                  theme.palette.primary.main,
-                  0.09
-                )}`,
+                textShadow:
+                  theme.palette.mode === "dark"
+                    ? `0 2px 8px ${alpha(theme.palette.primary.main, 0.25)}`
+                    : `0 2px 8px ${alpha(theme.palette.primary.main, 0.09)}`,
                 letterSpacing: "-1.5px",
                 textAlign: "center",
               }}
@@ -453,7 +469,10 @@ function AppContent() {
                   textAlign: "center",
                   p: 2,
                   borderRadius: 3,
-                  bgcolor: "background.paper",
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? alpha(theme.palette.background.paper, 0.85)
+                      : "background.paper",
                   boxShadow: 3,
                   display: "flex",
                   flexDirection: "column",
@@ -477,7 +496,10 @@ function AppContent() {
                   textAlign: "center",
                   p: 2,
                   borderRadius: 3,
-                  bgcolor: "background.paper",
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? alpha(theme.palette.background.paper, 0.85)
+                      : "background.paper",
                   boxShadow: 3,
                   display: "flex",
                   flexDirection: "column",
@@ -503,7 +525,10 @@ function AppContent() {
                   textAlign: "center",
                   p: 2,
                   borderRadius: 3,
-                  bgcolor: "background.paper",
+                  bgcolor:
+                    theme.palette.mode === "dark"
+                      ? alpha(theme.palette.background.paper, 0.85)
+                      : "background.paper",
                   boxShadow: 3,
                   display: "flex",
                   flexDirection: "column",
@@ -578,13 +603,21 @@ function AppContent() {
           </Box>
         )}
 
-        <StyledContainer>
+        <StyledContainer
+          sx={{
+            width: "100%",
+            maxWidth: { xs: "100%", md: "1400px" },
+            px: { xs: 0.5, sm: 2, md: 4 },
+            boxSizing: "border-box",
+          }}
+        >
           {loading && (
             <Box
               display="flex"
               justifyContent="center"
               alignItems="center"
               minHeight="200px"
+              sx={{ width: "100%" }}
             >
               <CircularProgress size={40} thickness={4} />
             </Box>
@@ -600,6 +633,9 @@ function AppContent() {
                   theme.palette.mode === "dark"
                     ? `0 8px 32px ${alpha("#000", 0.3)}`
                     : `0 8px 32px ${alpha("#000", 0.1)}`,
+                width: "100%",
+                maxWidth: 600,
+                mx: "auto",
               }}
             >
               {error}
@@ -607,20 +643,37 @@ function AppContent() {
           )}
 
           {!loading && !error && (
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: { xs: 3, md: 6 },
+                width: "100%",
+              }}
+            >
               <Routes>
                 <Route
                   path="/"
                   element={
                     <>
                       {/* Live Earthquake Map Section */}
-                      <StyledPaper id="earthquake-map-section" sx={{ mb: 4 }}>
+                      <StyledPaper
+                        id="earthquake-map-section"
+                        sx={{
+                          mb: { xs: 2, md: 4 },
+                          p: { xs: 1, sm: 2, md: 4 },
+                          width: "100%",
+                          minWidth: 0,
+                          boxSizing: "border-box",
+                        }}
+                      >
                         <Box
                           sx={{
                             display: "flex",
                             alignItems: "center",
                             mb: 2,
                             gap: 1,
+                            flexWrap: "wrap",
                           }}
                         >
                           <span role="img" aria-label="map">
@@ -632,6 +685,7 @@ function AppContent() {
                               fontWeight: 700,
                               color: theme.palette.text.primary,
                               letterSpacing: "-0.5px",
+                              textAlign: "left",
                             }}
                           >
                             Live Earthquake Map
@@ -645,16 +699,27 @@ function AppContent() {
                       </StyledPaper>
 
                       {/* Survey Section */}
-                      <EarthquakeSurvey />
+                      <Box sx={{ width: "100%", minWidth: 0 }}>
+                        <EarthquakeSurvey />
+                      </Box>
 
                       {/* Recent Earthquakes Section */}
-                      <StyledPaper sx={{ mt: 4 }}>
+                      <StyledPaper
+                        sx={{
+                          mt: { xs: 2, md: 4 },
+                          p: { xs: 1, sm: 2, md: 4 },
+                          width: "100%",
+                          minWidth: 0,
+                          boxSizing: "border-box",
+                        }}
+                      >
                         <Box
                           sx={{
                             display: "flex",
                             alignItems: "center",
                             mb: 2,
                             gap: 1,
+                            flexWrap: "wrap",
                           }}
                         >
                           <span role="img" aria-label="earthquake">
@@ -666,6 +731,7 @@ function AppContent() {
                               fontWeight: 700,
                               color: theme.palette.text.primary,
                               letterSpacing: "-0.5px",
+                              textAlign: "left",
                             }}
                           >
                             Recent Earthquakes
@@ -683,7 +749,9 @@ function AppContent() {
                 <Route
                   path="/analytics"
                   element={
-                    <EarthquakeAnalytics earthquakes={filteredEarthquakes} />
+                    <Box sx={{ width: "100%", minWidth: 0 }}>
+                      <EarthquakeAnalytics earthquakes={filteredEarthquakes} />
+                    </Box>
                   }
                 />
               </Routes>

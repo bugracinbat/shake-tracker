@@ -25,18 +25,34 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
   borderRadius: "12px",
   boxShadow:
-    "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-  backgroundColor: "rgba(255, 255, 255, 0.8)",
-  backdropFilter: "blur(8px)",
+    theme.palette.mode === "dark"
+      ? "0 4px 12px rgba(0,0,0,0.45)"
+      : "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+  backgroundColor:
+    theme.palette.mode === "dark"
+      ? theme.palette.background.paper
+      : "rgba(255, 255, 255, 0.8)",
+  color: theme.palette.text.primary,
+  backdropFilter: theme.palette.mode === "dark" ? undefined : "blur(8px)",
 }));
 
 const ResponseCard = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
   marginBottom: theme.spacing(1),
   transition: "transform 0.2s ease-in-out",
+  backgroundColor:
+    theme.palette.mode === "dark" ? theme.palette.background.default : "#fff",
+  color: theme.palette.text.primary,
+  boxShadow:
+    theme.palette.mode === "dark"
+      ? "0 2px 8px rgba(0,0,0,0.35)"
+      : "0 4px 8px rgba(0, 0, 0, 0.1)",
   "&:hover": {
     transform: "translateY(-2px)",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+    boxShadow:
+      theme.palette.mode === "dark"
+        ? "0 4px 16px rgba(0,0,0,0.5)"
+        : "0 4px 8px rgba(0, 0, 0, 0.15)",
   },
 }));
 
@@ -47,8 +63,16 @@ const SurveyHeader = styled(Box)(({ theme }) => ({
   cursor: "pointer",
   padding: theme.spacing(2),
   borderRadius: theme.spacing(1),
+  backgroundColor:
+    theme.palette.mode === "dark"
+      ? theme.palette.background.default
+      : theme.palette.action.hover,
+  color: theme.palette.text.primary,
   "&:hover": {
-    backgroundColor: theme.palette.action.hover,
+    backgroundColor:
+      theme.palette.mode === "dark"
+        ? theme.palette.background.paper
+        : theme.palette.action.selected,
   },
 }));
 
