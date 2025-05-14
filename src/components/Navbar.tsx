@@ -53,8 +53,8 @@ const StyledAppBar = styled(AppBar)(({ theme }) => ({
       : "0 8px 32px rgba(33,150,243,0.10)",
   borderRadius: 28,
   margin: "24px auto 32px auto",
-  maxWidth: "1200px",
-  width: "calc(100% - 32px)",
+  maxWidth: "1100px", // Match main content container
+  width: "100%", // Use full width of container
   color: theme.palette.text.primary,
   border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
   transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
