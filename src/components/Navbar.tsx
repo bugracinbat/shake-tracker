@@ -19,7 +19,6 @@ import {
   Tooltip,
   Avatar,
   Fade,
-  Slide,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -28,7 +27,7 @@ import {
   Brightness7 as LightModeIcon,
   Search as SearchIcon,
   Info as InfoIcon,
-
+  Settings as SettingsIcon,
   LocationOn as LocationIcon,
   Timeline as TimelineIcon,
   Home as HomeIcon,
@@ -206,7 +205,7 @@ const Navbar = ({
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <StyledAppBar position="sticky">
+    <StyledAppBar position="sticky" role="navigation" aria-label="Main Navigation">
       <StyledToolbar>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Typography
@@ -225,6 +224,9 @@ const Navbar = ({
                 color: "primary.main",
               },
             }}
+            tabIndex={0}
+            aria-label="Go to home page"
+            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') navigate("/"); }}
           >
             <LocationIcon color="primary" />
             ShakeTracker
@@ -236,6 +238,7 @@ const Navbar = ({
                 color="inherit"
                 onClick={handleMobileMenuOpen}
                 sx={{ ml: 2 }}
+                aria-label="Open navigation menu"
               >
                 <MenuIcon />
               </IconButton>
@@ -244,6 +247,10 @@ const Navbar = ({
                 open={Boolean(mobileMenuAnchor)}
                 onClose={handleMobileMenuClose}
                 TransitionComponent={Fade}
+                MenuListProps={{
+                  'aria-label': 'Mobile navigation menu',
+                  autoFocus: true,
+                }}
               >
                 <MenuItem
                   onClick={() => {
@@ -251,6 +258,7 @@ const Navbar = ({
                     handleMobileMenuClose();
                   }}
                   selected={isActive("/")}
+                  aria-current={isActive("/") ? "page" : undefined}
                 >
                   <ListItemIcon>
                     <HomeIcon color={isActive("/") ? "primary" : "inherit"} />
@@ -263,6 +271,7 @@ const Navbar = ({
                     handleMobileMenuClose();
                   }}
                   selected={isActive("/analytics")}
+                  aria-current={isActive("/analytics") ? "page" : undefined}
                 >
                   <ListItemIcon>
                     <TimelineIcon
@@ -297,6 +306,8 @@ const Navbar = ({
                     : "transparent",
                   color: isActive("/") ? "primary.main" : "inherit",
                 }}
+                aria-current={isActive("/") ? "page" : undefined}
+                aria-label="Home"
               >
                 Home
               </NavButton>
@@ -309,6 +320,8 @@ const Navbar = ({
                     : "transparent",
                   color: isActive("/analytics") ? "primary.main" : "inherit",
                 }}
+                aria-current={isActive("/analytics") ? "page" : undefined}
+                aria-label="Analytics"
               >
                 Analytics
               </NavButton>
@@ -329,6 +342,10 @@ const Navbar = ({
                   <SearchIcon sx={{ color: theme.palette.text.secondary }} />
                 </InputAdornment>
               ),
+              'aria-label': 'Search earthquakes',
+            }}
+            inputProps={{
+              'aria-label': 'Search earthquakes',
             }}
           />
 
@@ -339,19 +356,24 @@ const Navbar = ({
               sx={{
                 transition: "all 0.2s ease-in-out",
                 color: theme.palette.text.primary,
-                "&:hover": {
+                '&:hover': {
                   transform: "scale(1.1)",
                   backgroundColor: alpha(theme.palette.primary.main, 0.1),
                 },
               }}
+              aria-label="Show recent earthquakes"
+              aria-haspopup="true"
+              aria-controls={notificationsAnchor ? 'recent-earthquakes-menu' : undefined}
+              aria-expanded={Boolean(notificationsAnchor)}
             >
               <Badge
                 badgeContent={recentEarthquakes.length}
                 color="error"
                 sx={{
-                  "& .MuiBadge-badge": {
+                  '& .MuiBadge-badge': {
                     backgroundColor: theme.palette.error.main,
                     color: theme.palette.error.contrastText,
+                    animation: recentEarthquakes.length ? 'pulse 1s infinite' : 'none',
                   },
                 }}
               >
@@ -360,7 +382,6 @@ const Navbar = ({
             </IconButton>
           </Tooltip>
 
-
           <Tooltip title={`Switch to ${darkMode ? "light" : "dark"} mode`}>
             <IconButton
               color="inherit"
@@ -368,14 +389,24 @@ const Navbar = ({
               sx={{
                 transition: "all 0.2s ease-in-out",
                 color: theme.palette.text.primary,
-                "&:hover": {
+                '&:hover': {
                   transform: "rotate(180deg)",
                   backgroundColor: alpha(theme.palette.primary.main, 0.1),
                 },
               }}
+              aria-label={`Switch to ${darkMode ? "light" : "dark"} mode`}
             >
               {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
             </IconButton>
+          </Tooltip>
+
+          {/* Example avatar/profile menu for future extensibility */}
+          <Tooltip title="Profile (coming soon)">
+            <span>
+              <IconButton color="inherit" disabled aria-label="User profile">
+                <Avatar sx={{ width: 32, height: 32 }}>U</Avatar>
+              </IconButton>
+            </span>
           </Tooltip>
         </Box>
       </StyledToolbar>
@@ -385,6 +416,10 @@ const Navbar = ({
         open={Boolean(notificationsAnchor)}
         onClose={handleNotificationsClose}
         TransitionComponent={Fade}
+        MenuListProps={{
+          'aria-label': 'Recent earthquakes',
+        }}
+        id="recent-earthquakes-menu"
       >
         <Box sx={{ p: 2 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
@@ -398,7 +433,7 @@ const Navbar = ({
                 px: 2,
                 borderRadius: 1,
                 transition: "all 0.2s ease-in-out",
-                "&:hover": {
+                '&:hover': {
                   backgroundColor: alpha(theme.palette.primary.main, 0.1),
                 },
               }}
@@ -407,8 +442,7 @@ const Navbar = ({
                 {earthquake.title}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                Magnitude: {earthquake.mag} •{" "}
-                {new Date(earthquake.date_time).toLocaleString()}
+                Magnitude: {earthquake.mag} • {new Date(earthquake.date_time).toLocaleString()}
               </Typography>
             </Box>
           ))}
