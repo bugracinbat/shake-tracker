@@ -357,21 +357,22 @@ function AppContent() {
         {location.pathname === "/" && (
           <Box
             sx={{
-              width: '100%',
+              width: "100%",
               minHeight: { xs: 300, md: 380 },
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexDirection: 'column',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
               background: `linear-gradient(120deg, ${theme.palette.primary.light} 0%, ${theme.palette.secondary.light} 100%)`,
               borderRadius: 6,
               mb: 5,
-              boxShadow: theme.palette.mode === 'dark'
-                ? `0 12px 48px ${alpha(theme.palette.common.black, 0.4)}`
-                : `0 12px 48px ${alpha(theme.palette.primary.main, 0.08)}`,
+              boxShadow:
+                theme.palette.mode === "dark"
+                  ? `0 12px 48px ${alpha(theme.palette.common.black, 0.4)}`
+                  : `0 12px 48px ${alpha(theme.palette.primary.main, 0.08)}`,
               p: { xs: 4, md: 8 },
-              position: 'relative',
-              overflow: 'hidden',
+              position: "relative",
+              overflow: "hidden",
             }}
           >
             <Typography
@@ -380,9 +381,12 @@ function AppContent() {
                 fontWeight: 900,
                 color: theme.palette.primary.dark,
                 mb: 2,
-                textShadow: `0 2px 8px ${alpha(theme.palette.primary.main, 0.09)}`,
-                letterSpacing: '-1.5px',
-                textAlign: 'center',
+                textShadow: `0 2px 8px ${alpha(
+                  theme.palette.primary.main,
+                  0.09
+                )}`,
+                letterSpacing: "-1.5px",
+                textAlign: "center",
               }}
             >
               Shake Tracker
@@ -393,46 +397,104 @@ function AppContent() {
                 color: theme.palette.text.primary,
                 mb: 2,
                 fontWeight: 500,
-                textAlign: 'center',
+                textAlign: "center",
                 maxWidth: 600,
               }}
             >
-              Real-time earthquake monitoring, analytics, and community reporting. Stay safe and informed.
+              Real-time earthquake monitoring, analytics, and community
+              reporting. Stay safe and informed.
             </Typography>
             <Typography
               variant="body1"
               sx={{
                 color: theme.palette.text.secondary,
                 mb: 4,
-                textAlign: 'center',
+                textAlign: "center",
                 maxWidth: 500,
               }}
             >
-              Explore recent seismic activity, view analytics, and share your experience with the community.
+              Explore recent seismic activity, view analytics, and share your
+              experience with the community.
             </Typography>
+            {/* Quick Analytics Section */}
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 3,
+                mb: 4,
+                justifyContent: "center",
+              }}
+            >
+              <Box sx={{ minWidth: 120, textAlign: "center" }}>
+                <Typography variant="h6" color="primary.main" fontWeight={700}>
+                  {earthquakes.length}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Total Earthquakes
+                </Typography>
+              </Box>
+              <Box sx={{ minWidth: 120, textAlign: "center" }}>
+                <Typography variant="h6" color="error.main" fontWeight={700}>
+                  {earthquakes.length > 0
+                    ? Math.max(...earthquakes.map((e) => e.mag)).toFixed(1)
+                    : "-"}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Strongest Magnitude
+                </Typography>
+              </Box>
+              <Box sx={{ minWidth: 120, textAlign: "center" }}>
+                <Typography variant="h6" color="info.main" fontWeight={700}>
+                  {
+                    earthquakes.filter((e) => {
+                      const now = new Date();
+                      const eqDate = new Date(e.date_time);
+                      return (
+                        now.getTime() - eqDate.getTime() < 24 * 60 * 60 * 1000
+                      );
+                    }).length
+                  }
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Last 24h
+                </Typography>
+              </Box>
+            </Box>
             <Box>
               <button
                 onClick={() => {
-                  const mapSection = document.getElementById('earthquake-map-section');
+                  const mapSection = document.getElementById(
+                    "earthquake-map-section"
+                  );
                   if (mapSection) {
-                    mapSection.scrollIntoView({ behavior: 'smooth' });
+                    mapSection.scrollIntoView({ behavior: "smooth" });
                   }
                 }}
                 style={{
                   background: theme.palette.primary.main,
-                  color: '#fff',
-                  border: 'none',
+                  color: "#fff",
+                  border: "none",
                   borderRadius: 24,
-                  padding: '12px 32px',
+                  padding: "12px 32px",
                   fontSize: 18,
                   fontWeight: 700,
-                  letterSpacing: '0.5px',
-                  cursor: 'pointer',
-                  boxShadow: `0 2px 12px ${alpha(theme.palette.primary.main, 0.15)}`,
-                  transition: 'all 0.2s',
+                  letterSpacing: "0.5px",
+                  cursor: "pointer",
+                  boxShadow: `0 2px 12px ${alpha(
+                    theme.palette.primary.main,
+                    0.15
+                  )}`,
+                  transition: "all 0.2s",
                 }}
-                onMouseOver={e => (e.currentTarget.style.background = theme.palette.primary.dark)}
-                onMouseOut={e => (e.currentTarget.style.background = theme.palette.primary.main)}
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.background =
+                    theme.palette.primary.dark)
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.background =
+                    theme.palette.primary.main)
+                }
               >
                 View Live Map
               </button>
@@ -477,8 +539,17 @@ function AppContent() {
                     <>
                       {/* Live Earthquake Map Section */}
                       <StyledPaper id="earthquake-map-section" sx={{ mb: 4 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
-                          <span role="img" aria-label="map">🗺️</span>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            mb: 2,
+                            gap: 1,
+                          }}
+                        >
+                          <span role="img" aria-label="map">
+                            🗺️
+                          </span>
                           <Typography
                             variant="h5"
                             sx={{
@@ -502,8 +573,17 @@ function AppContent() {
 
                       {/* Recent Earthquakes Section */}
                       <StyledPaper sx={{ mt: 4 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
-                          <span role="img" aria-label="earthquake">🌐</span>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            mb: 2,
+                            gap: 1,
+                          }}
+                        >
+                          <span role="img" aria-label="earthquake">
+                            🌐
+                          </span>
                           <Typography
                             variant="h5"
                             sx={{
