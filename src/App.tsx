@@ -11,6 +11,7 @@ import {
   CssBaseline,
   IconButton,
   Tooltip,
+  alpha,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import {
@@ -29,28 +30,31 @@ import Navbar from "./components/Navbar";
 import RefreshIcon from "@mui/icons-material/Refresh";
 
 const StyledContainer = styled(Container)(({ theme }) => ({
-  paddingTop: theme.spacing(2),
-  paddingBottom: theme.spacing(4),
+  paddingTop: theme.spacing(4),
+  paddingBottom: theme.spacing(6),
+  maxWidth: "1400px",
 }));
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(3),
-  borderRadius: "16px",
+  padding: theme.spacing(4),
+  borderRadius: "24px",
   boxShadow:
     theme.palette.mode === "dark"
-      ? "0 4px 20px rgba(0, 0, 0, 0.3)"
-      : "0 4px 20px rgba(0, 0, 0, 0.1)",
+      ? `0 8px 32px ${alpha(theme.palette.common.black, 0.4)}`
+      : `0 8px 32px ${alpha(theme.palette.common.black, 0.08)}`,
   backgroundColor:
     theme.palette.mode === "dark"
-      ? "rgba(26, 26, 26, 0.8)"
-      : "rgba(255, 255, 255, 0.8)",
-  backdropFilter: "blur(8px)",
-  transition: "all 0.3s ease-in-out",
+      ? alpha(theme.palette.background.paper, 0.8)
+      : alpha(theme.palette.background.paper, 0.9),
+  backdropFilter: "blur(12px)",
+  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+  border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
   "&:hover": {
     boxShadow:
       theme.palette.mode === "dark"
-        ? "0 6px 24px rgba(0, 0, 0, 0.4)"
-        : "0 6px 24px rgba(0, 0, 0, 0.15)",
+        ? `0 12px 48px ${alpha(theme.palette.common.black, 0.5)}`
+        : `0 12px 48px ${alpha(theme.palette.common.black, 0.12)}`,
+    transform: "translateY(-2px)",
   },
 }));
 
@@ -86,8 +90,8 @@ function AppContent() {
         contrastText: "#fff",
       },
       background: {
-        default: darkMode ? "#121212" : "#f5f5f5",
-        paper: darkMode ? "#1e1e1e" : "#ffffff",
+        default: darkMode ? "#0a0a0a" : "#fafafa",
+        paper: darkMode ? "#1a1a1a" : "#ffffff",
       },
       error: {
         main: darkMode ? "#ef5350" : "#d32f2f",
@@ -105,66 +109,82 @@ function AppContent() {
     typography: {
       fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
       h1: {
-        fontWeight: 700,
-        letterSpacing: "-0.5px",
+        fontWeight: 800,
+        letterSpacing: "-1px",
+        fontSize: "3.5rem",
       },
       h2: {
         fontWeight: 700,
-        letterSpacing: "-0.5px",
+        letterSpacing: "-0.75px",
+        fontSize: "2.75rem",
       },
       h3: {
-        fontWeight: 600,
+        fontWeight: 700,
         letterSpacing: "-0.5px",
+        fontSize: "2.25rem",
       },
       h4: {
         fontWeight: 600,
         letterSpacing: "-0.5px",
+        fontSize: "1.75rem",
       },
       h5: {
         fontWeight: 600,
-        letterSpacing: "-0.5px",
+        letterSpacing: "-0.25px",
+        fontSize: "1.5rem",
       },
       h6: {
         fontWeight: 600,
-        letterSpacing: "-0.5px",
+        letterSpacing: "-0.25px",
+        fontSize: "1.25rem",
       },
       subtitle1: {
         fontWeight: 500,
         letterSpacing: "-0.25px",
+        fontSize: "1.1rem",
       },
       subtitle2: {
         fontWeight: 500,
         letterSpacing: "-0.25px",
+        fontSize: "0.9rem",
       },
       body1: {
         letterSpacing: "-0.25px",
+        fontSize: "1rem",
+        lineHeight: 1.6,
       },
       body2: {
         letterSpacing: "-0.25px",
+        fontSize: "0.875rem",
+        lineHeight: 1.6,
       },
       button: {
-        fontWeight: 500,
+        fontWeight: 600,
         textTransform: "none",
+        letterSpacing: "-0.25px",
       },
     },
     shape: {
-      borderRadius: 12,
+      borderRadius: 16,
     },
     components: {
       MuiButton: {
         styleOverrides: {
           root: {
-            borderRadius: 8,
-            padding: "8px 16px",
-            transition: "all 0.2s ease-in-out",
+            borderRadius: 12,
+            padding: "10px 20px",
+            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
             "&:hover": {
-              transform: "translateY(-1px)",
+              transform: "translateY(-2px)",
             },
           },
           contained: {
             boxShadow: "none",
             "&:hover": {
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              boxShadow: `0 8px 24px ${alpha(
+                darkMode ? "#000" : "#1976d2",
+                0.25
+              )}`,
             },
           },
         },
@@ -179,17 +199,19 @@ function AppContent() {
       MuiCard: {
         styleOverrides: {
           root: {
-            borderRadius: 16,
+            borderRadius: 24,
             boxShadow: darkMode
-              ? "0 4px 20px rgba(0, 0, 0, 0.3)"
-              : "0 4px 20px rgba(0, 0, 0, 0.1)",
+              ? `0 8px 32px ${alpha("#000", 0.4)}`
+              : `0 8px 32px ${alpha("#000", 0.08)}`,
+            border: `1px solid ${alpha(darkMode ? "#fff" : "#000", 0.1)}`,
           },
         },
       },
       MuiChip: {
         styleOverrides: {
           root: {
-            borderRadius: 8,
+            borderRadius: 12,
+            fontWeight: 500,
           },
         },
       },
@@ -197,7 +219,11 @@ function AppContent() {
         styleOverrides: {
           root: {
             "& .MuiOutlinedInput-root": {
-              borderRadius: 8,
+              borderRadius: 12,
+              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+              "&:hover": {
+                backgroundColor: alpha(darkMode ? "#fff" : "#000", 0.04),
+              },
             },
           },
         },
@@ -205,7 +231,10 @@ function AppContent() {
       MuiAlert: {
         styleOverrides: {
           root: {
-            borderRadius: 8,
+            borderRadius: 12,
+            boxShadow: darkMode
+              ? `0 4px 20px ${alpha("#000", 0.3)}`
+              : `0 4px 20px ${alpha("#000", 0.1)}`,
           },
         },
       },
@@ -275,7 +304,10 @@ function AppContent() {
         sx={{
           minHeight: "100vh",
           backgroundColor: theme.palette.background.default,
-          transition: "background-color 0.3s ease-in-out",
+          transition: "background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          backgroundImage: darkMode
+            ? "radial-gradient(circle at 50% 50%, rgba(25, 118, 210, 0.05) 0%, rgba(25, 118, 210, 0) 50%)"
+            : "radial-gradient(circle at 50% 50%, rgba(25, 118, 210, 0.03) 0%, rgba(25, 118, 210, 0) 50%)",
         }}
       >
         <Navbar
@@ -290,12 +322,19 @@ function AppContent() {
             justifyContent: "flex-end",
             alignItems: "center",
             gap: 2,
-            px: 2,
-            pt: 1,
-            pb: 0,
+            px: 3,
+            pt: 2,
+            pb: 1,
           }}
         >
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              fontWeight: 500,
+              opacity: 0.8,
+            }}
+          >
             Last updated: {formatLastRefresh()}
           </Typography>
           <Tooltip title="Refresh data">
@@ -303,9 +342,10 @@ function AppContent() {
               onClick={fetchEarthquakes}
               disabled={loading}
               sx={{
-                transition: "transform 0.2s ease-in-out",
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
                 "&:hover": {
                   transform: "rotate(180deg)",
+                  backgroundColor: alpha(theme.palette.primary.main, 0.1),
                 },
               }}
             >
@@ -313,10 +353,15 @@ function AppContent() {
             </IconButton>
           </Tooltip>
         </Box>
-        <StyledContainer maxWidth="lg">
+        <StyledContainer>
           {loading && (
-            <Box display="flex" justifyContent="center" my={4}>
-              <CircularProgress />
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              minHeight="200px"
+            >
+              <CircularProgress size={40} thickness={4} />
             </Box>
           )}
 
@@ -324,12 +369,12 @@ function AppContent() {
             <Alert
               severity="error"
               sx={{
-                my: 2,
-                borderRadius: 2,
+                my: 3,
+                borderRadius: 3,
                 boxShadow:
                   theme.palette.mode === "dark"
-                    ? "0 4px 20px rgba(0, 0, 0, 0.3)"
-                    : "0 4px 20px rgba(0, 0, 0, 0.1)",
+                    ? `0 8px 32px ${alpha("#000", 0.3)}`
+                    : `0 8px 32px ${alpha("#000", 0.1)}`,
               }}
             >
               {error}
@@ -337,7 +382,7 @@ function AppContent() {
           )}
 
           {!loading && !error && (
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
               <Routes>
                 <Route
                   path="/"
@@ -345,10 +390,10 @@ function AppContent() {
                     <>
                       <StyledPaper>
                         <Typography
-                          variant="h6"
+                          variant="h5"
                           sx={{
-                            mb: 2,
-                            fontWeight: 600,
+                            mb: 3,
+                            fontWeight: 700,
                             color: theme.palette.text.primary,
                             letterSpacing: "-0.5px",
                           }}
@@ -366,10 +411,10 @@ function AppContent() {
 
                       <StyledPaper>
                         <Typography
-                          variant="h6"
+                          variant="h5"
                           sx={{
-                            mb: 2,
-                            fontWeight: 600,
+                            mb: 3,
+                            fontWeight: 700,
                             color: theme.palette.text.primary,
                             letterSpacing: "-0.5px",
                           }}
