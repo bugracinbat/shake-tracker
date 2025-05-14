@@ -11,11 +11,15 @@ import {
   CircularProgress,
   Divider,
   Chip,
+  Collapse,
+  IconButton,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import CommentIcon from "@mui/icons-material/Comment";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
@@ -33,6 +37,18 @@ const ResponseCard = styled(Paper)(({ theme }) => ({
   "&:hover": {
     transform: "translateY(-2px)",
     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+  },
+}));
+
+const SurveyHeader = styled(Box)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  cursor: "pointer",
+  padding: theme.spacing(2),
+  borderRadius: theme.spacing(1),
+  "&:hover": {
+    backgroundColor: theme.palette.action.hover,
   },
 }));
 
@@ -56,6 +72,7 @@ const EarthquakeSurvey = () => {
   const [responses, setResponses] = useState<SurveyResponse[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   // Load responses from localStorage on component mount
   useEffect(() => {
@@ -128,108 +145,118 @@ const EarthquakeSurvey = () => {
 
   return (
     <StyledPaper>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" sx={{ mb: 1, fontWeight: 700 }}>
-          Earthquake Experience Survey
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Help us understand the impact of recent earthquakes in your area. Your
-          responses contribute to our understanding of earthquake effects.
-        </Typography>
-      </Box>
+      <SurveyHeader onClick={() => setIsExpanded(!isExpanded)}>
+        <Box>
+          <Typography variant="h5" sx={{ fontWeight: 700 }}>
+            Earthquake Experience Survey
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Help us understand the impact of recent earthquakes in your area
+          </Typography>
+        </Box>
+        <IconButton>
+          {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+        </IconButton>
+      </SurveyHeader>
 
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
-          Did you feel a recent earthquake?
-        </Typography>
-        <Button
-          variant={felt === true ? "contained" : "outlined"}
-          onClick={() => setFelt(true)}
-          sx={{ mr: 2, minWidth: 100 }}
-        >
-          Yes
-        </Button>
-        <Button
-          variant={felt === false ? "contained" : "outlined"}
-          onClick={() => setFelt(false)}
-          sx={{ minWidth: 100 }}
-        >
-          No
-        </Button>
-      </Box>
-
-      {felt && (
-        <>
+      <Collapse in={isExpanded}>
+        <Box sx={{ mt: 2 }}>
           <Box sx={{ mb: 3 }}>
-            <Typography component="legend" sx={{ mb: 1, fontWeight: 600 }}>
-              How strong was it?
+            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
+              Did you feel a recent earthquake?
             </Typography>
-            <Rating
-              value={intensity}
-              onChange={(_, newValue) => setIntensity(newValue || 0)}
-              max={10}
-              sx={{ mb: 1 }}
-            />
-            {intensity > 0 && (
-              <Typography variant="body2" color="text.secondary">
-                {getIntensityLabel(intensity)}
-              </Typography>
-            )}
+            <Button
+              variant={felt === true ? "contained" : "outlined"}
+              onClick={() => setFelt(true)}
+              sx={{ mr: 2, minWidth: 100 }}
+            >
+              Yes
+            </Button>
+            <Button
+              variant={felt === false ? "contained" : "outlined"}
+              onClick={() => setFelt(false)}
+              sx={{ minWidth: 100 }}
+            >
+              No
+            </Button>
           </Box>
 
-          <TextField
-            fullWidth
-            label="Your Location"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            sx={{ mb: 2 }}
-            InputProps={{
-              startAdornment: (
-                <LocationOnIcon sx={{ mr: 1, color: "text.secondary" }} />
-              ),
-            }}
-          />
-
-          <TextField
-            fullWidth
-            label="Additional Comments"
-            multiline
-            rows={3}
-            value={comments}
-            onChange={(e) => {
-              if (e.target.value.length <= MAX_COMMENT_LENGTH) {
-                setComments(e.target.value);
-              }
-            }}
-            sx={{ mb: 1 }}
-            helperText={`${comments.length}/${MAX_COMMENT_LENGTH} characters`}
-          />
-        </>
-      )}
-
-      <Box sx={{ mt: 3, mb: 3 }}>
-        <Button
-          variant="contained"
-          onClick={handleSubmit}
-          disabled={felt === null || (felt && intensity === 0) || isSubmitting}
-          sx={{ mr: 2 }}
-        >
-          {isSubmitting ? (
+          {felt && (
             <>
-              <CircularProgress size={20} sx={{ mr: 1 }} />
-              Submitting...
-            </>
-          ) : (
-            "Submit Response"
-          )}
-        </Button>
+              <Box sx={{ mb: 3 }}>
+                <Typography component="legend" sx={{ mb: 1, fontWeight: 600 }}>
+                  How strong was it?
+                </Typography>
+                <Rating
+                  value={intensity}
+                  onChange={(_, newValue) => setIntensity(newValue || 0)}
+                  max={10}
+                  sx={{ mb: 1 }}
+                />
+                {intensity > 0 && (
+                  <Typography variant="body2" color="text.secondary">
+                    {getIntensityLabel(intensity)}
+                  </Typography>
+                )}
+              </Box>
 
-        {responses.length > 0 && (
-          <Button variant="outlined" color="error" onClick={clearResponses}>
-            Clear All Responses
-          </Button>
-        )}
-      </Box>
+              <TextField
+                fullWidth
+                label="Your Location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                sx={{ mb: 2 }}
+                InputProps={{
+                  startAdornment: (
+                    <LocationOnIcon sx={{ mr: 1, color: "text.secondary" }} />
+                  ),
+                }}
+              />
+
+              <TextField
+                fullWidth
+                label="Additional Comments"
+                multiline
+                rows={3}
+                value={comments}
+                onChange={(e) => {
+                  if (e.target.value.length <= MAX_COMMENT_LENGTH) {
+                    setComments(e.target.value);
+                  }
+                }}
+                sx={{ mb: 1 }}
+                helperText={`${comments.length}/${MAX_COMMENT_LENGTH} characters`}
+              />
+            </>
+          )}
+
+          <Box sx={{ mt: 3, mb: 3 }}>
+            <Button
+              variant="contained"
+              onClick={handleSubmit}
+              disabled={
+                felt === null || (felt && intensity === 0) || isSubmitting
+              }
+              sx={{ mr: 2 }}
+            >
+              {isSubmitting ? (
+                <>
+                  <CircularProgress size={20} sx={{ mr: 1 }} />
+                  Submitting...
+                </>
+              ) : (
+                "Submit Response"
+              )}
+            </Button>
+
+            {responses.length > 0 && (
+              <Button variant="outlined" color="error" onClick={clearResponses}>
+                Clear All Responses
+              </Button>
+            )}
+          </Box>
+        </Box>
+      </Collapse>
 
       {responses.length > 0 && (
         <Box sx={{ mt: 4 }}>
