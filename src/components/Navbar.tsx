@@ -37,21 +37,29 @@ import { styled, alpha } from "@mui/material/styles";
 import type { Earthquake } from "../types/earthquake";
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  background: theme.palette.mode === "dark"
-    ? `linear-gradient(90deg, ${alpha(theme.palette.background.paper, 0.95)} 60%, ${alpha(theme.palette.primary.dark, 0.7)} 100%)`
-    : `linear-gradient(90deg, ${alpha(theme.palette.background.paper, 0.92)} 60%, ${alpha(theme.palette.primary.light, 0.7)} 100%)`,
+  background:
+    theme.palette.mode === "dark"
+      ? `linear-gradient(90deg, ${alpha(
+          theme.palette.background.paper,
+          0.95
+        )} 60%, ${alpha(theme.palette.primary.dark, 0.7)} 100%)`
+      : `linear-gradient(90deg, ${alpha(
+          theme.palette.background.paper,
+          0.92
+        )} 60%, ${alpha(theme.palette.primary.light, 0.7)} 100%)`,
   backdropFilter: "blur(18px)",
-  boxShadow: theme.palette.mode === "dark"
-    ? "0 8px 32px rgba(0,0,0,0.28)"
-    : "0 8px 32px rgba(33,150,243,0.10)",
+  boxShadow:
+    theme.palette.mode === "dark"
+      ? "0 8px 32px rgba(0,0,0,0.28)"
+      : "0 8px 32px rgba(33,150,243,0.10)",
   borderRadius: 28,
-  margin: '24px auto 32px auto',
-  maxWidth: '1200px',
-  width: 'calc(100% - 32px)',
+  margin: "24px auto 32px auto",
+  maxWidth: "1200px",
+  width: "calc(100% - 32px)",
   color: theme.palette.text.primary,
   border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
   transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-  position: 'sticky',
+  position: "sticky",
   top: 16,
   zIndex: 1100,
 }));
@@ -72,20 +80,21 @@ const NavButton = styled(Button)<{
   padding: theme.spacing(1.1, 2.5),
   borderRadius: theme.spacing(3),
   fontWeight: 600,
-  letterSpacing: '0.02em',
+  letterSpacing: "0.02em",
   fontSize: 17,
-  background: 'transparent',
+  background: "transparent",
   transition: "all 0.22s cubic-bezier(0.4, 0, 0.2, 1)",
   position: "relative",
   overflow: "hidden",
-  boxShadow: 'none',
-  '&:hover, &:focus': {
+  boxShadow: "none",
+  "&:hover, &:focus": {
     backgroundColor: alpha(theme.palette.primary.main, 0.12),
     color: theme.palette.primary.main,
     transform: "translateY(-2px) scale(1.04)",
-    boxShadow: theme.palette.mode === 'dark'
-      ? `0 2px 8px ${alpha(theme.palette.primary.dark, 0.20)}`
-      : `0 2px 8px ${alpha(theme.palette.primary.main, 0.10)}`,
+    boxShadow:
+      theme.palette.mode === "dark"
+        ? `0 2px 8px ${alpha(theme.palette.primary.dark, 0.2)}`
+        : `0 2px 8px ${alpha(theme.palette.primary.main, 0.1)}`,
   },
   "&::after": {
     content: '""',
@@ -205,7 +214,11 @@ const Navbar = ({
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <StyledAppBar position="sticky" role="navigation" aria-label="Main Navigation">
+    <StyledAppBar
+      position="sticky"
+      role="navigation"
+      aria-label="Main Navigation"
+    >
       <StyledToolbar>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Typography
@@ -226,7 +239,9 @@ const Navbar = ({
             }}
             tabIndex={0}
             aria-label="Go to home page"
-            onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') navigate("/"); }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") navigate("/");
+            }}
           >
             <LocationIcon color="primary" />
             ShakeTracker
@@ -248,7 +263,7 @@ const Navbar = ({
                 onClose={handleMobileMenuClose}
                 TransitionComponent={Fade}
                 MenuListProps={{
-                  'aria-label': 'Mobile navigation menu',
+                  "aria-label": "Mobile navigation menu",
                   autoFocus: true,
                 }}
               >
@@ -342,10 +357,10 @@ const Navbar = ({
                   <SearchIcon sx={{ color: theme.palette.text.secondary }} />
                 </InputAdornment>
               ),
-              'aria-label': 'Search earthquakes',
+              "aria-label": "Search earthquakes",
             }}
             inputProps={{
-              'aria-label': 'Search earthquakes',
+              "aria-label": "Search earthquakes",
             }}
           />
 
@@ -356,24 +371,28 @@ const Navbar = ({
               sx={{
                 transition: "all 0.2s ease-in-out",
                 color: theme.palette.text.primary,
-                '&:hover': {
+                "&:hover": {
                   transform: "scale(1.1)",
                   backgroundColor: alpha(theme.palette.primary.main, 0.1),
                 },
               }}
               aria-label="Show recent earthquakes"
               aria-haspopup="true"
-              aria-controls={notificationsAnchor ? 'recent-earthquakes-menu' : undefined}
+              aria-controls={
+                notificationsAnchor ? "recent-earthquakes-menu" : undefined
+              }
               aria-expanded={Boolean(notificationsAnchor)}
             >
               <Badge
                 badgeContent={recentEarthquakes.length}
                 color="error"
                 sx={{
-                  '& .MuiBadge-badge': {
+                  "& .MuiBadge-badge": {
                     backgroundColor: theme.palette.error.main,
                     color: theme.palette.error.contrastText,
-                    animation: recentEarthquakes.length ? 'pulse 1s infinite' : 'none',
+                    animation: recentEarthquakes.length
+                      ? "pulse 1s infinite"
+                      : "none",
                   },
                 }}
               >
@@ -389,7 +408,7 @@ const Navbar = ({
               sx={{
                 transition: "all 0.2s ease-in-out",
                 color: theme.palette.text.primary,
-                '&:hover': {
+                "&:hover": {
                   transform: "rotate(180deg)",
                   backgroundColor: alpha(theme.palette.primary.main, 0.1),
                 },
@@ -417,7 +436,7 @@ const Navbar = ({
         onClose={handleNotificationsClose}
         TransitionComponent={Fade}
         MenuListProps={{
-          'aria-label': 'Recent earthquakes',
+          "aria-label": "Recent earthquakes",
         }}
         id="recent-earthquakes-menu"
       >
@@ -433,7 +452,7 @@ const Navbar = ({
                 px: 2,
                 borderRadius: 1,
                 transition: "all 0.2s ease-in-out",
-                '&:hover': {
+                "&:hover": {
                   backgroundColor: alpha(theme.palette.primary.main, 0.1),
                 },
               }}
@@ -442,7 +461,8 @@ const Navbar = ({
                 {earthquake.title}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                Magnitude: {earthquake.mag} • {new Date(earthquake.date_time).toLocaleString()}
+                Magnitude: {earthquake.mag} •{" "}
+                {new Date(earthquake.date_time).toLocaleString()}
               </Typography>
             </Box>
           ))}
