@@ -24,6 +24,7 @@ import type { Earthquake } from "./types/earthquake";
 import EarthquakeList from "./components/EarthquakeList";
 import EarthquakeMap from "./components/EarthquakeMap";
 import EarthquakeAnalytics from "./components/EarthquakeAnalytics";
+import EarthquakeSurvey from "./components/EarthquakeSurvey";
 import Navbar from "./components/Navbar";
 import RefreshIcon from "@mui/icons-material/Refresh";
 
@@ -181,6 +182,8 @@ function AppContent() {
                   path="/"
                   element={
                     <>
+                      <EarthquakeSurvey />
+
                       <StyledPaper>
                         <Typography
                           variant="h6"
