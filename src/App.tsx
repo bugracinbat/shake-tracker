@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import {
   Container,
   Typography,
@@ -64,9 +64,6 @@ const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 function AppContent() {
   const [earthquakes, setEarthquakes] = useState<Earthquake[]>([]);
-  const [filteredEarthquakes, setFilteredEarthquakes] = useState<Earthquake[]>(
-    []
-  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedEarthquakeId, setSelectedEarthquakeId] = useState<
@@ -82,6 +79,8 @@ function AppContent() {
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
   const location = useLocation();
   const mapRef = useRef<EarthquakeMapHandle>(null);
+
+  const [searchQuery, setSearchQuery] = useState("");
 
   const theme = createTheme({
     palette: {
@@ -256,7 +255,6 @@ function AppContent() {
       setError(null);
       const response = await getEarthquakes();
       setEarthquakes(response.result);
-      setFilteredEarthquakes(response.result);
       setLastRefresh(new Date());
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -299,14 +297,11 @@ function AppContent() {
     return () => clearTimeout(timeout);
   }, [location.pathname]);
 
-  const handleSearch = (query: string) => {
-    if (!query.trim()) {
-      setFilteredEarthquakes(earthquakes);
-      return;
-    }
-
-    const searchTerm = query.toLowerCase();
-    const filtered = earthquakes.filter((earthquake) => {
+  // Memoize filtered earthquakes for search
+  const filteredEarthquakes = useMemo(() => {
+    if (!searchQuery.trim()) return earthquakes;
+    const searchTerm = searchQuery.toLowerCase();
+    return earthquakes.filter((earthquake) => {
       return (
         earthquake.title.toLowerCase().includes(searchTerm) ||
         earthquake.location_properties.closestCity.name
@@ -315,7 +310,10 @@ function AppContent() {
         earthquake.mag.toString().includes(searchTerm)
       );
     });
-    setFilteredEarthquakes(filtered);
+  }, [earthquakes, searchQuery]);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
   };
 
   const handleEarthquakeSelect = (id: string) => {
