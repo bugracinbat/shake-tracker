@@ -29,7 +29,7 @@ import EarthquakeAnalytics from "./components/EarthquakeAnalytics";
 import EarthquakeSurvey from "./components/EarthquakeSurvey";
 import Navbar from "./components/Navbar";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import NProgress from 'nprogress';
+import NProgress from "nprogress";
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(4),
@@ -74,7 +74,10 @@ function AppContent() {
   >(null);
   const [darkMode, setDarkMode] = useState(() => {
     const stored = localStorage.getItem("darkMode");
-    return stored ? stored === "true" : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return stored
+      ? stored === "true"
+      : window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
   const location = useLocation();
@@ -275,7 +278,8 @@ function AppContent() {
   useEffect(() => {
     localStorage.setItem("darkMode", String(darkMode));
     // Animate body background for smooth transition
-    document.body.style.transition = 'background 0.4s cubic-bezier(0.4,0,0.2,1)';
+    document.body.style.transition =
+      "background 0.4s cubic-bezier(0.4,0,0.2,1)";
   }, [darkMode]);
 
   // Show nprogress bar on route/data loading

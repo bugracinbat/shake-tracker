@@ -158,10 +158,7 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
     const now = new Date();
     const days = parseInt(timeRange);
     const startDate = subDays(now, days);
-    return earthquakes.filter(
-      (eq) =>
-        parseISO(eq.date_time) >= startDate
-    );
+    return earthquakes.filter((eq) => parseISO(eq.date_time) >= startDate);
   }, [earthquakes, timeRange]);
 
   // Key Statistics
@@ -290,7 +287,10 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
         borderRadius: 6,
         background:
           theme.palette.mode === "dark"
-            ? `linear-gradient(120deg, ${alpha(theme.palette.primary.main, 0.35)} 0%, ${alpha(theme.palette.secondary.main, 0.25)} 100%)`
+            ? `linear-gradient(120deg, ${alpha(
+                theme.palette.primary.main,
+                0.35
+              )} 0%, ${alpha(theme.palette.secondary.main, 0.25)} 100%)`
             : `linear-gradient(120deg, ${theme.palette.primary.light} 0%, ${theme.palette.secondary.light} 100%)`,
         boxShadow:
           theme.palette.mode === "dark"
@@ -298,23 +298,27 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
             : `0 12px 48px ${alpha(theme.palette.primary.main, 0.08)}`,
         position: "relative",
         overflow: "hidden",
-        'backdropFilter': 'blur(18px) saturate(1.2)',
-        'border': `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
-        animation: 'fadeInAnalytics 0.8s cubic-bezier(0.4,0,0.2,1)',
-        '@keyframes fadeInAnalytics': {
-          from: { opacity: 0, filter: 'blur(10px)' },
-          to: { opacity: 1, filter: 'none' },
+        backdropFilter: "blur(18px) saturate(1.2)",
+        border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
+        animation: "fadeInAnalytics 0.8s cubic-bezier(0.4,0,0.2,1)",
+        "@keyframes fadeInAnalytics": {
+          from: { opacity: 0, filter: "blur(10px)" },
+          to: { opacity: 1, filter: "none" },
         },
       }}
     >
       {/* Floating Stats Bar - responsive grid */}
       <Box
         sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' },
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            sm: "1fr 1fr",
+            md: "repeat(4, 1fr)",
+          },
           gap: 2,
           mb: 4,
-          position: 'relative',
+          position: "relative",
           zIndex: 2,
         }}
       >
@@ -328,19 +332,24 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            background: theme.palette.mode === "dark"
-              ? alpha(theme.palette.primary.main, 0.85)
-              : "rgba(255,255,255,0.85)",
-            color: theme.palette.mode === "dark" ? theme.palette.getContrastText(theme.palette.primary.main) : theme.palette.text.primary,
-            boxShadow: theme.palette.mode === "dark"
-              ? `0 4px 24px ${alpha(theme.palette.primary.main, 0.25)}`
-              : "0 4px 24px rgba(33,150,243,0.10)",
-            backdropFilter: 'blur(10px)',
+            background:
+              theme.palette.mode === "dark"
+                ? alpha(theme.palette.primary.main, 0.85)
+                : "rgba(255,255,255,0.85)",
+            color:
+              theme.palette.mode === "dark"
+                ? theme.palette.getContrastText(theme.palette.primary.main)
+                : theme.palette.text.primary,
+            boxShadow:
+              theme.palette.mode === "dark"
+                ? `0 4px 24px ${alpha(theme.palette.primary.main, 0.25)}`
+                : "0 4px 24px rgba(33,150,243,0.10)",
+            backdropFilter: "blur(10px)",
             border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
-            animation: 'fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)',
-            '@keyframes fadeInCard': {
-              from: { opacity: 0, filter: 'blur(6px)' },
-              to: { opacity: 1, filter: 'none' },
+            animation: "fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)",
+            "@keyframes fadeInCard": {
+              from: { opacity: 0, filter: "blur(6px)" },
+              to: { opacity: 1, filter: "none" },
             },
           }}
         >
@@ -368,19 +377,24 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            background: theme.palette.mode === "dark"
-              ? alpha(theme.palette.primary.main, 0.85)
-              : "rgba(255,255,255,0.85)",
-            color: theme.palette.mode === "dark" ? theme.palette.getContrastText(theme.palette.primary.main) : theme.palette.text.primary,
-            boxShadow: theme.palette.mode === "dark"
-              ? `0 4px 24px ${alpha(theme.palette.primary.main, 0.25)}`
-              : "0 4px 24px rgba(33,150,243,0.10)",
-            backdropFilter: 'blur(10px)',
+            background:
+              theme.palette.mode === "dark"
+                ? alpha(theme.palette.primary.main, 0.85)
+                : "rgba(255,255,255,0.85)",
+            color:
+              theme.palette.mode === "dark"
+                ? theme.palette.getContrastText(theme.palette.primary.main)
+                : theme.palette.text.primary,
+            boxShadow:
+              theme.palette.mode === "dark"
+                ? `0 4px 24px ${alpha(theme.palette.primary.main, 0.25)}`
+                : "0 4px 24px rgba(33,150,243,0.10)",
+            backdropFilter: "blur(10px)",
             border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
-            animation: 'fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)',
-            '@keyframes fadeInCard': {
-              from: { opacity: 0, filter: 'blur(6px)' },
-              to: { opacity: 1, filter: 'none' },
+            animation: "fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)",
+            "@keyframes fadeInCard": {
+              from: { opacity: 0, filter: "blur(6px)" },
+              to: { opacity: 1, filter: "none" },
             },
           }}
         >
@@ -408,19 +422,24 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            background: theme.palette.mode === "dark"
-              ? alpha(theme.palette.primary.main, 0.85)
-              : "rgba(255,255,255,0.85)",
-            color: theme.palette.mode === "dark" ? theme.palette.getContrastText(theme.palette.primary.main) : theme.palette.text.primary,
-            boxShadow: theme.palette.mode === "dark"
-              ? `0 4px 24px ${alpha(theme.palette.primary.main, 0.25)}`
-              : "0 4px 24px rgba(33,150,243,0.10)",
-            backdropFilter: 'blur(10px)',
+            background:
+              theme.palette.mode === "dark"
+                ? alpha(theme.palette.primary.main, 0.85)
+                : "rgba(255,255,255,0.85)",
+            color:
+              theme.palette.mode === "dark"
+                ? theme.palette.getContrastText(theme.palette.primary.main)
+                : theme.palette.text.primary,
+            boxShadow:
+              theme.palette.mode === "dark"
+                ? `0 4px 24px ${alpha(theme.palette.primary.main, 0.25)}`
+                : "0 4px 24px rgba(33,150,243,0.10)",
+            backdropFilter: "blur(10px)",
             border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
-            animation: 'fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)',
-            '@keyframes fadeInCard': {
-              from: { opacity: 0, filter: 'blur(6px)' },
-              to: { opacity: 1, filter: 'none' },
+            animation: "fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)",
+            "@keyframes fadeInCard": {
+              from: { opacity: 0, filter: "blur(6px)" },
+              to: { opacity: 1, filter: "none" },
             },
           }}
         >
@@ -448,19 +467,24 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            background: theme.palette.mode === "dark"
-              ? alpha(theme.palette.primary.main, 0.85)
-              : "rgba(255,255,255,0.85)",
-            color: theme.palette.mode === "dark" ? theme.palette.getContrastText(theme.palette.primary.main) : theme.palette.text.primary,
-            boxShadow: theme.palette.mode === "dark"
-              ? `0 4px 24px ${alpha(theme.palette.primary.main, 0.25)}`
-              : "0 4px 24px rgba(33,150,243,0.10)",
-            backdropFilter: 'blur(10px)',
+            background:
+              theme.palette.mode === "dark"
+                ? alpha(theme.palette.primary.main, 0.85)
+                : "rgba(255,255,255,0.85)",
+            color:
+              theme.palette.mode === "dark"
+                ? theme.palette.getContrastText(theme.palette.primary.main)
+                : theme.palette.text.primary,
+            boxShadow:
+              theme.palette.mode === "dark"
+                ? `0 4px 24px ${alpha(theme.palette.primary.main, 0.25)}`
+                : "0 4px 24px rgba(33,150,243,0.10)",
+            backdropFilter: "blur(10px)",
             border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
-            animation: 'fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)',
-            '@keyframes fadeInCard': {
-              from: { opacity: 0, filter: 'blur(6px)' },
-              to: { opacity: 1, filter: 'none' },
+            animation: "fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)",
+            "@keyframes fadeInCard": {
+              from: { opacity: 0, filter: "blur(6px)" },
+              to: { opacity: 1, filter: "none" },
             },
           }}
         >
@@ -566,12 +590,21 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
       {/* Main Charts - responsive grid */}
       <Box
         sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
           gap: 3,
         }}
       >
-        <Paper sx={{ p: 2, height: "100%", minHeight: 400, backdropFilter: 'blur(10px)', border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`, animation: 'fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)' }}>
+        <Paper
+          sx={{
+            p: 2,
+            height: "100%",
+            minHeight: 400,
+            backdropFilter: "blur(10px)",
+            border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
+            animation: "fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)",
+          }}
+        >
           <Typography variant="h6" gutterBottom>
             Magnitude Distribution
           </Typography>
@@ -610,7 +643,16 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
         </Paper>
 
         {/* Time Series */}
-        <Paper sx={{ p: 2, height: "100%", minHeight: 400, backdropFilter: 'blur(10px)', border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`, animation: 'fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)' }}>
+        <Paper
+          sx={{
+            p: 2,
+            height: "100%",
+            minHeight: 400,
+            backdropFilter: "blur(10px)",
+            border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
+            animation: "fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)",
+          }}
+        >
           <Typography variant="h6" gutterBottom>
             Earthquake Activity Over Time
           </Typography>
@@ -670,7 +712,16 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
         </Paper>
 
         {/* Depth vs Magnitude */}
-        <Paper sx={{ p: 2, minHeight: 400, gridColumn: { xs: "1", md: "1 / -1" }, backdropFilter: 'blur(10px)', border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`, animation: 'fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)' }}>
+        <Paper
+          sx={{
+            p: 2,
+            minHeight: 400,
+            gridColumn: { xs: "1", md: "1 / -1" },
+            backdropFilter: "blur(10px)",
+            border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
+            animation: "fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)",
+          }}
+        >
           <Typography variant="h6" gutterBottom>
             Depth vs Magnitude Correlation
           </Typography>
@@ -738,7 +789,17 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
         </Paper>
 
         {/* Recent Significant Earthquakes */}
-        <Paper sx={{ p: 2, height: "100%", minHeight: 400, gridColumn: { xs: "1", md: "1 / -1" }, backdropFilter: 'blur(10px)', border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`, animation: 'fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)' }}>
+        <Paper
+          sx={{
+            p: 2,
+            height: "100%",
+            minHeight: 400,
+            gridColumn: { xs: "1", md: "1 / -1" },
+            backdropFilter: "blur(10px)",
+            border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
+            animation: "fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)",
+          }}
+        >
           <Typography variant="h6" gutterBottom>
             Recent Significant Earthquakes
           </Typography>
