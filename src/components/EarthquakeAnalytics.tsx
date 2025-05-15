@@ -106,14 +106,14 @@ const StatCard = ({
 };
 
 // Fix CustomTooltip to return React.ReactElement or null
-// interface CustomTooltipProps {
-//   active?: boolean;
-//   payload?: Array<{ name: string; value: string | number; color: string }>;
-//   label?: string;
-// }
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{ name: string; value: string | number; color: string }>;
+  label?: string;
+}
 const CustomTooltip: React.FC<CustomTooltipProps> = ({
   active,
-  payload,
+  payload = [],
   label,
 }) => {
   if (active && payload && payload.length) {
@@ -127,7 +127,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
         }}
       >
         <Typography variant="subtitle2">{label}</Typography>
-        {payload.map((entry, index) => (
+        {payload.map((entry: any, index: number) => (
           <Typography key={index} variant="body2" sx={{ color: entry.color }}>
             {entry.name}: {entry.value}
           </Typography>
@@ -298,24 +298,12 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
             : `0 12px 48px ${alpha(theme.palette.primary.main, 0.08)}`,
         position: "relative",
         overflow: "hidden",
-        "::before": {
-          content: '""',
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          background: theme.palette.mode === "dark"
-            ? alpha(theme.palette.primary.light, 0.10)
-            : "rgba(255,255,255,0.12)",
-          zIndex: 0,
-        },
-        zIndex: 1,
-        animation: "analyticsBgMove 12s ease-in-out infinite",
-        "@keyframes analyticsBgMove": {
-          "0%": { backgroundPosition: "0% 50%" },
-          "50%": { backgroundPosition: "100% 50%" },
-          "100%": { backgroundPosition: "0% 50%" },
+        'backdropFilter': 'blur(18px) saturate(1.2)',
+        'border': `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
+        animation: 'fadeInAnalytics 0.8s cubic-bezier(0.4,0,0.2,1)',
+        '@keyframes fadeInAnalytics': {
+          from: { opacity: 0, filter: 'blur(10px)' },
+          to: { opacity: 1, filter: 'none' },
         },
       }}
     >
@@ -330,6 +318,7 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
           zIndex: 2,
         }}
       >
+        {/* Add glassy effect to stat cards */}
         <Paper
           elevation={6}
           sx={{
@@ -346,6 +335,13 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
             boxShadow: theme.palette.mode === "dark"
               ? `0 4px 24px ${alpha(theme.palette.primary.main, 0.25)}`
               : "0 4px 24px rgba(33,150,243,0.10)",
+            backdropFilter: 'blur(10px)',
+            border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
+            animation: 'fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)',
+            '@keyframes fadeInCard': {
+              from: { opacity: 0, filter: 'blur(6px)' },
+              to: { opacity: 1, filter: 'none' },
+            },
           }}
         >
           <span role="img" aria-label="total">
@@ -379,6 +375,13 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
             boxShadow: theme.palette.mode === "dark"
               ? `0 4px 24px ${alpha(theme.palette.primary.main, 0.25)}`
               : "0 4px 24px rgba(33,150,243,0.10)",
+            backdropFilter: 'blur(10px)',
+            border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
+            animation: 'fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)',
+            '@keyframes fadeInCard': {
+              from: { opacity: 0, filter: 'blur(6px)' },
+              to: { opacity: 1, filter: 'none' },
+            },
           }}
         >
           <span role="img" aria-label="avg">
@@ -412,6 +415,13 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
             boxShadow: theme.palette.mode === "dark"
               ? `0 4px 24px ${alpha(theme.palette.primary.main, 0.25)}`
               : "0 4px 24px rgba(33,150,243,0.10)",
+            backdropFilter: 'blur(10px)',
+            border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
+            animation: 'fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)',
+            '@keyframes fadeInCard': {
+              from: { opacity: 0, filter: 'blur(6px)' },
+              to: { opacity: 1, filter: 'none' },
+            },
           }}
         >
           <span role="img" aria-label="max">
@@ -445,6 +455,13 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
             boxShadow: theme.palette.mode === "dark"
               ? `0 4px 24px ${alpha(theme.palette.primary.main, 0.25)}`
               : "0 4px 24px rgba(33,150,243,0.10)",
+            backdropFilter: 'blur(10px)',
+            border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`,
+            animation: 'fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)',
+            '@keyframes fadeInCard': {
+              from: { opacity: 0, filter: 'blur(6px)' },
+              to: { opacity: 1, filter: 'none' },
+            },
           }}
         >
           <span role="img" aria-label="recent">
@@ -554,8 +571,7 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
           gap: 3,
         }}
       >
-        {/* Magnitude Distribution */}
-        <Paper sx={{ p: 2, height: "100%", minHeight: 400 }}>
+        <Paper sx={{ p: 2, height: "100%", minHeight: 400, backdropFilter: 'blur(10px)', border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`, animation: 'fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)' }}>
           <Typography variant="h6" gutterBottom>
             Magnitude Distribution
           </Typography>
@@ -594,7 +610,7 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
         </Paper>
 
         {/* Time Series */}
-        <Paper sx={{ p: 2, height: "100%", minHeight: 400 }}>
+        <Paper sx={{ p: 2, height: "100%", minHeight: 400, backdropFilter: 'blur(10px)', border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`, animation: 'fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)' }}>
           <Typography variant="h6" gutterBottom>
             Earthquake Activity Over Time
           </Typography>
@@ -631,8 +647,6 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
                 stroke="#ff7300"
                 name="Average Magnitude"
                 strokeWidth={2}
-                dot={{ r: 4 }}
-                activeDot={{ r: 6 }}
                 animationDuration={1500}
               />
               <Scatter
@@ -642,8 +656,6 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
                 stroke="#ff0000"
                 name="Max Magnitude"
                 strokeWidth={2}
-                dot={{ r: 4 }}
-                activeDot={{ r: 6 }}
                 animationDuration={1500}
               />
               <Brush
@@ -658,13 +670,7 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
         </Paper>
 
         {/* Depth vs Magnitude */}
-        <Paper
-          sx={{
-            p: 2,
-            minHeight: 400,
-            gridColumn: { xs: "1", md: "1 / -1" },
-          }}
-        >
+        <Paper sx={{ p: 2, minHeight: 400, gridColumn: { xs: "1", md: "1 / -1" }, backdropFilter: 'blur(10px)', border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`, animation: 'fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)' }}>
           <Typography variant="h6" gutterBottom>
             Depth vs Magnitude Correlation
           </Typography>
@@ -732,14 +738,7 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
         </Paper>
 
         {/* Recent Significant Earthquakes */}
-        <Paper
-          sx={{
-            p: 2,
-            height: "100%",
-            minHeight: 400,
-            gridColumn: { xs: "1", md: "1 / -1" },
-          }}
-        >
+        <Paper sx={{ p: 2, height: "100%", minHeight: 400, gridColumn: { xs: "1", md: "1 / -1" }, backdropFilter: 'blur(10px)', border: `1.5px solid ${alpha(theme.palette.divider, 0.13)}`, animation: 'fadeInCard 0.7s cubic-bezier(0.4,0,0.2,1)' }}>
           <Typography variant="h6" gutterBottom>
             Recent Significant Earthquakes
           </Typography>

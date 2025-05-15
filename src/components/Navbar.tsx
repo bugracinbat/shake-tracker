@@ -448,16 +448,25 @@ const Navbar = ({
               color="inherit"
               onClick={onThemeChange}
               sx={{
-                transition: "all 0.2s ease-in-out",
+                transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
                 color: theme.palette.text.primary,
-                "&:hover": {
-                  transform: "rotate(180deg)",
-                  backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                '&:hover': {
+                  transform: 'rotate(180deg) scale(1.15)',
+                  backgroundColor: alpha(theme.palette.primary.main, 0.13),
+                },
+                '& .theme-toggle-icon': {
+                  transition: 'transform 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.3s',
+                  transform: darkMode ? 'rotate(-180deg) scale(1.1)' : 'rotate(0deg) scale(1.1)',
+                  opacity: 1,
                 },
               }}
               aria-label={`Switch to ${darkMode ? "light" : "dark"} mode`}
             >
-              {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+              {darkMode ? (
+                <LightModeIcon className="theme-toggle-icon" />
+              ) : (
+                <DarkModeIcon className="theme-toggle-icon" />
+              )}
             </IconButton>
           </Tooltip>
         </Box>

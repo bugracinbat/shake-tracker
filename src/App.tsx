@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Container,
   Typography,
@@ -24,10 +24,12 @@ import { getEarthquakes } from "./services/earthquakeService";
 import type { Earthquake } from "./types/earthquake";
 import EarthquakeList from "./components/EarthquakeList";
 import EarthquakeMap from "./components/EarthquakeMap";
+import type { EarthquakeMapHandle } from "./components/EarthquakeMap";
 import EarthquakeAnalytics from "./components/EarthquakeAnalytics";
 import EarthquakeSurvey from "./components/EarthquakeSurvey";
 import Navbar from "./components/Navbar";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import NProgress from 'nprogress';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(4),
@@ -70,9 +72,13 @@ function AppContent() {
   const [selectedEarthquakeId, setSelectedEarthquakeId] = useState<
     string | null
   >(null);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    const stored = localStorage.getItem("darkMode");
+    return stored ? stored === "true" : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
   const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
   const location = useLocation();
+  const mapRef = useRef<EarthquakeMapHandle>(null);
 
   const theme = createTheme({
     palette: {
@@ -266,6 +272,29 @@ function AppContent() {
     return () => clearInterval(intervalId);
   }, [fetchEarthquakes]);
 
+  useEffect(() => {
+    localStorage.setItem("darkMode", String(darkMode));
+    // Animate body background for smooth transition
+    document.body.style.transition = 'background 0.4s cubic-bezier(0.4,0,0.2,1)';
+  }, [darkMode]);
+
+  // Show nprogress bar on route/data loading
+  useEffect(() => {
+    if (loading) {
+      NProgress.start();
+    } else {
+      NProgress.done();
+    }
+  }, [loading]);
+
+  // Animate nprogress on route change
+  useEffect(() => {
+    NProgress.start();
+    NProgress.set(0.4);
+    const timeout = setTimeout(() => NProgress.done(), 400);
+    return () => clearTimeout(timeout);
+  }, [location.pathname]);
+
   const handleSearch = (query: string) => {
     if (!query.trim()) {
       setFilteredEarthquakes(earthquakes);
@@ -287,10 +316,19 @@ function AppContent() {
 
   const handleEarthquakeSelect = (id: string) => {
     setSelectedEarthquakeId(id === selectedEarthquakeId ? null : id);
+    const eq = earthquakes.find((e) => e._id === id);
+    if (eq && mapRef.current) {
+      mapRef.current.flyToEarthquake(eq);
+      // Scroll to map section
+      const mapSection = document.getElementById("earthquake-map-section");
+      if (mapSection) {
+        mapSection.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
   };
 
   const handleThemeChange = () => {
-    setDarkMode(!darkMode);
+    setDarkMode((prev) => !prev);
   };
 
   const formatLastRefresh = () => {
@@ -692,6 +730,7 @@ function AppContent() {
                           </Typography>
                         </Box>
                         <EarthquakeMap
+                          ref={mapRef}
                           earthquakes={filteredEarthquakes}
                           selectedEarthquakeId={selectedEarthquakeId}
                           onEarthquakeSelect={handleEarthquakeSelect}
