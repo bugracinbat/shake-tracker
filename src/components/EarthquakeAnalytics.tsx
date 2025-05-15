@@ -127,9 +127,9 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
         }}
       >
         <Typography variant="subtitle2">{label}</Typography>
-        {payload.map((entry: any, index: number) => (
-          <Typography key={index} variant="body2" sx={{ color: entry.color }}>
-            {entry.name}: {entry.value}
+        {payload.map((entry, index) => (
+          <Typography key={index} variant="body2" sx={{ color: (entry as { color: string }).color }}>
+            {(entry as { name: string }).name}: {(entry as { value: string | number }).value}
           </Typography>
         ))}
       </Paper>
@@ -158,34 +158,43 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
     const now = new Date();
     const days = parseInt(timeRange);
     const startDate = subDays(now, days);
-    return earthquakes.filter((eq) => parseISO(eq.date_time) >= startDate);
+    // Avoid re-parsing date_time for every filter by mapping once
+    return earthquakes
+      .map((eq) => ({ ...eq, parsedDate: parseISO(eq.date_time) }))
+      .filter((eq) => eq.parsedDate >= startDate);
   }, [earthquakes, timeRange]);
 
   // Key Statistics
   const stats = useMemo(() => {
     const totalCount = filteredEarthquakes.length;
+    // Avoid division by zero
     const avgMagnitude =
-      filteredEarthquakes.reduce((sum, eq) => sum + eq.mag, 0) / totalCount;
-    const maxMagnitude = Math.max(...filteredEarthquakes.map((eq) => eq.mag));
+      totalCount > 0
+        ? filteredEarthquakes.reduce((sum, eq) => sum + eq.mag, 0) / totalCount
+        : 0;
+    const maxMagnitude =
+      totalCount > 0
+        ? Math.max(...filteredEarthquakes.map((eq) => eq.mag))
+        : 0;
     const recentCount = filteredEarthquakes.filter(
-      (eq) => differenceInHours(new Date(), parseISO(eq.date_time)) < 24
+      (eq) => differenceInHours(new Date(), eq.parsedDate) < 24
     ).length;
 
     // Calculate trend (comparing with previous period)
-    const previousPeriod = earthquakes.filter(
-      (eq) =>
-        parseISO(eq.date_time) >=
-          subDays(new Date(), parseInt(timeRange) * 2) &&
-        parseISO(eq.date_time) < subDays(new Date(), parseInt(timeRange))
-    );
+    const days = parseInt(timeRange);
+    const now = new Date();
+    const prevStart = subDays(now, days * 2);
+    const prevEnd = subDays(now, days);
+    const previousPeriod = earthquakes
+      .map((eq) => ({ ...eq, parsedDate: parseISO(eq.date_time) }))
+      .filter((eq) => eq.parsedDate >= prevStart && eq.parsedDate < prevEnd);
     const previousCount = previousPeriod.length;
     const trend = previousCount
       ? ((totalCount - previousCount) / previousCount) * 100
       : 0;
 
     // Calculate daily average
-    const days = parseInt(timeRange);
-    const dailyAverage = totalCount / days;
+    const dailyAverage = days > 0 ? totalCount / days : 0;
 
     // Calculate magnitude distribution
     const magnitudeDistribution = {
@@ -235,7 +244,7 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
   const timeSeriesData = useMemo(() => {
     const dailyData = new Map();
     filteredEarthquakes.forEach((eq) => {
-      const date = format(parseISO(eq.date_time), "MMM dd");
+      const date = format(eq.parsedDate, "MMM dd");
       if (!dailyData.has(date)) {
         dailyData.set(date, {
           count: 0,
@@ -265,7 +274,7 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
       depth: eq.depth,
       magnitude: eq.mag,
       size: Math.pow(eq.mag, 2) * 10, // Size based on magnitude
-      date: format(parseISO(eq.date_time), "MMM dd"),
+      date: format(eq.parsedDate, "MMM dd"),
     }));
   }, [filteredEarthquakes]);
 
@@ -273,10 +282,7 @@ const EarthquakeAnalytics = ({ earthquakes }: EarthquakeAnalyticsProps) => {
   const recentSignificant = useMemo(() => {
     return filteredEarthquakes
       .filter((eq) => eq.mag >= 4.5)
-      .sort(
-        (a, b) =>
-          parseISO(b.date_time).getTime() - parseISO(a.date_time).getTime()
-      )
+      .sort((a, b) => b.parsedDate.getTime() - a.parsedDate.getTime())
       .slice(0, 5);
   }, [filteredEarthquakes]);
 
