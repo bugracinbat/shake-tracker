@@ -39,8 +39,13 @@ const EarthquakeMap = forwardRef<EarthquakeMapHandle, EarthquakeMapProps>(
           center={center}
           zoom={zoom}
           style={{ height: "100%", width: "100%" }}
-          whenCreated={(mapInstance) => {
-            mapRef.current = mapInstance;
+          whenReady={() => {
+            if (mapRef.current) {
+              // Map is ready
+            }
+          }}
+          ref={(map) => {
+            mapRef.current = map;
           }}
         >
           <TileLayer

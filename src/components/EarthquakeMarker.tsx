@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Marker, Popup } from "react-leaflet";
-import { Icon, DivIcon } from "leaflet";
+import { DivIcon } from "leaflet";
 import type { Earthquake } from "../types/earthquake";
 
 interface EarthquakeMarkerProps {
