@@ -24,12 +24,12 @@ import {
   Notifications as NotificationsIcon,
   Brightness4 as DarkModeIcon,
   Brightness7 as LightModeIcon,
-  Search as SearchIcon,
   Info as InfoIcon,
   Settings as SettingsIcon,
   LocationOn as LocationIcon,
   Timeline as TimelineIcon,
   Home as HomeIcon,
+  Shield as ShieldIcon,
 } from "@mui/icons-material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { styled, alpha } from "@mui/material/styles";
@@ -100,16 +100,22 @@ const NavButton = styled(Button)<{
   to?: string;
 }>(({ theme }) => ({
   color: theme.palette.text.primary,
-  padding: theme.spacing(1.1, 2.5),
+  padding: theme.spacing(1, 1.5),
   borderRadius: theme.spacing(3),
   fontWeight: 600,
   letterSpacing: "0.02em",
-  fontSize: 17,
+  fontSize: "0.9rem",
   background: "transparent",
   transition: "all 0.22s cubic-bezier(0.4, 0, 0.2, 1)",
   position: "relative",
   overflow: "hidden",
   boxShadow: "none",
+  whiteSpace: "nowrap",
+  minWidth: "auto",
+  [theme.breakpoints.up("lg")]: {
+    padding: theme.spacing(1.1, 2.5),
+    fontSize: "1rem",
+  },
   "&:hover, &:focus": {
     backgroundColor: alpha(theme.palette.primary.main, 0.12),
     color: theme.palette.primary.main,
@@ -159,43 +165,16 @@ const StyledMenu = styled(Menu)(({ theme }) => ({
   },
 }));
 
-const SearchField = styled(TextField)(({ theme }) => ({
-  "& .MuiOutlinedInput-root": {
-    borderRadius: theme.spacing(2),
-    backgroundColor: alpha(theme.palette.background.paper, 0.8),
-    backdropFilter: "blur(8px)",
-    transition: "all 0.2s ease-in-out",
-    "& fieldset": {
-      borderColor: alpha(theme.palette.divider, 0.1),
-    },
-    "&:hover fieldset": {
-      borderColor: theme.palette.primary.main,
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: theme.palette.primary.main,
-    },
-  },
-  "& .MuiInputBase-input": {
-    color: theme.palette.text.primary,
-  },
-  "& .MuiInputBase-input::placeholder": {
-    color: theme.palette.text.secondary,
-    opacity: 0.7,
-  },
-}));
-
 interface NavbarProps {
   darkMode: boolean;
   onThemeChange: () => void;
   earthquakes: Earthquake[];
-  onSearch: (query: string) => void;
 }
 
 const Navbar = ({
   darkMode,
   onThemeChange,
   earthquakes,
-  onSearch,
 }: NavbarProps) => {
   const [mobileMenuAnchor, setMobileMenuAnchor] = useState<null | HTMLElement>(
     null
@@ -206,7 +185,6 @@ const Navbar = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const location = useLocation();
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
 
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMobileMenuAnchor(event.currentTarget);
@@ -222,12 +200,6 @@ const Navbar = ({
 
   const handleNotificationsClose = () => {
     setNotificationsAnchor(null);
-  };
-
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const query = event.target.value;
-    setSearchQuery(query);
-    onSearch(query);
   };
 
   const recentEarthquakes = earthquakes
@@ -249,7 +221,7 @@ const Navbar = ({
             alignItems: "center",
             gap: 2,
             minWidth: 0,
-            flex: 1,
+            flex: { xs: 1, md: "0 1 auto" },
             overflowX: { xs: "auto", sm: "visible" },
           }}
         >
@@ -327,6 +299,36 @@ const Navbar = ({
                   </ListItemIcon>
                   <ListItemText primary="Analytics" />
                 </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    navigate("/statistics");
+                    handleMobileMenuClose();
+                  }}
+                  selected={isActive("/statistics")}
+                  aria-current={isActive("/statistics") ? "page" : undefined}
+                >
+                  <ListItemIcon>
+                    <InfoIcon
+                      color={isActive("/statistics") ? "primary" : "inherit"}
+                    />
+                  </ListItemIcon>
+                  <ListItemText primary="Statistics" />
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    navigate("/risk-assessment");
+                    handleMobileMenuClose();
+                  }}
+                  selected={isActive("/risk-assessment")}
+                  aria-current={isActive("/risk-assessment") ? "page" : undefined}
+                >
+                  <ListItemIcon>
+                    <ShieldIcon
+                      color={isActive("/risk-assessment") ? "primary" : "inherit"}
+                    />
+                  </ListItemIcon>
+                  <ListItemText primary="Risk Assessment" />
+                </MenuItem>
                 <Divider />
                 <MenuItem onClick={handleMobileMenuClose}>
                   <ListItemIcon>
@@ -372,6 +374,34 @@ const Navbar = ({
               >
                 Analytics
               </NavButton>
+              <NavButton
+                onClick={() => navigate("/statistics")}
+                startIcon={<InfoIcon />}
+                sx={{
+                  backgroundColor: isActive("/statistics")
+                    ? alpha(theme.palette.primary.main, 0.1)
+                    : "transparent",
+                  color: isActive("/statistics") ? "primary.main" : "inherit",
+                }}
+                aria-current={isActive("/statistics") ? "page" : undefined}
+                aria-label="Statistics"
+              >
+                Statistics
+              </NavButton>
+              <NavButton
+                onClick={() => navigate("/risk-assessment")}
+                startIcon={<ShieldIcon />}
+                sx={{
+                  backgroundColor: isActive("/risk-assessment")
+                    ? alpha(theme.palette.primary.main, 0.1)
+                    : "transparent",
+                  color: isActive("/risk-assessment") ? "primary.main" : "inherit",
+                }}
+                aria-current={isActive("/risk-assessment") ? "page" : undefined}
+                aria-label="Risk Assessment"
+              >
+                Risk Assessment
+              </NavButton>
             </Box>
           )}
         </Box>
@@ -380,31 +410,13 @@ const Navbar = ({
           sx={{
             display: "flex",
             alignItems: "center",
-            gap: 2,
+            gap: { xs: 1, sm: 2 },
             minWidth: 0,
-            flex: 1,
-            justifyContent: { xs: "flex-end", sm: "flex-end" },
-            overflowX: { xs: "auto", sm: "visible" },
+            flex: { xs: "0 0 auto", md: 1 },
+            justifyContent: "flex-end",
+            overflowX: { xs: "hidden", sm: "visible" },
           }}
         >
-          <SearchField
-            size="small"
-            placeholder="Search earthquakes..."
-            value={searchQuery}
-            onChange={handleSearch}
-            sx={{ width: 300 }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: theme.palette.text.secondary }} />
-                </InputAdornment>
-              ),
-              "aria-label": "Search earthquakes",
-            }}
-            inputProps={{
-              "aria-label": "Search earthquakes",
-            }}
-          />
 
           <Tooltip title="Recent Earthquakes">
             <IconButton

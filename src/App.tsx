@@ -12,6 +12,10 @@ import {
   IconButton,
   Tooltip,
   alpha,
+  Snackbar,
+  Badge,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import {
@@ -27,9 +31,18 @@ import EarthquakeMap from "./components/EarthquakeMap";
 import type { EarthquakeMapHandle } from "./components/EarthquakeMap";
 import EarthquakeAnalytics from "./components/EarthquakeAnalytics";
 import EarthquakeSurvey from "./components/EarthquakeSurvey";
+import EarthquakeFilters from "./components/EarthquakeFilters";
+import EarthquakeStatsDashboard from "./components/EarthquakeStatsDashboard";
+import EarthquakeRiskAssessment from "./components/EarthquakeRiskAssessment";
+import AlertSettings from "./components/AlertSettings";
+import type { AlertPreferences } from "./components/AlertSettings";
 import Navbar from "./components/Navbar";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import SearchIcon from "@mui/icons-material/Search";
 import NProgress from "nprogress";
+import { useEarthquakeAlerts } from "./hooks/useEarthquakeAlerts";
+import { useEarthquakeFilters } from "./hooks/useEarthquakeFilters";
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(4),
@@ -81,6 +94,22 @@ function AppContent() {
   const mapRef = useRef<EarthquakeMapHandle>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [alertSettingsOpen, setAlertSettingsOpen] = useState(false);
+  const [alertSnackbarOpen, setAlertSnackbarOpen] = useState(false);
+  const [latestAlert, setLatestAlert] = useState<Earthquake | null>(null);
+  const [alertPreferences, setAlertPreferences] = useState<AlertPreferences>(() => {
+    const stored = localStorage.getItem("alertPreferences");
+    return stored
+      ? JSON.parse(stored)
+      : {
+          enabled: false,
+          minMagnitude: 5.0,
+          maxDistance: 500,
+          playSound: true,
+          showNotification: true,
+          userLocation: null,
+        };
+  });
 
   const theme = createTheme({
     palette: {
@@ -297,20 +326,55 @@ function AppContent() {
     return () => clearTimeout(timeout);
   }, [location.pathname]);
 
-  // Memoize filtered earthquakes for search
+  // Use earthquake filters hook
+  const {
+    filters,
+    filteredEarthquakes: filterResults,
+    updateFilters,
+    resetFilters,
+  } = useEarthquakeFilters(earthquakes);
+
+  // Apply search on top of filters
   const filteredEarthquakes = useMemo(() => {
-    if (!searchQuery.trim()) return earthquakes;
-    const searchTerm = searchQuery.toLowerCase();
-    return earthquakes.filter((earthquake) => {
-      return (
-        earthquake.title.toLowerCase().includes(searchTerm) ||
-        earthquake.location_properties.closestCity.name
-          .toLowerCase()
-          .includes(searchTerm) ||
-        earthquake.mag.toString().includes(searchTerm)
-      );
-    });
-  }, [earthquakes, searchQuery]);
+    let results = filterResults;
+    if (searchQuery.trim()) {
+      const searchTerm = searchQuery.toLowerCase();
+      results = results.filter((earthquake) => {
+        return (
+          earthquake.title.toLowerCase().includes(searchTerm) ||
+          earthquake.location_properties.closestCity.name
+            .toLowerCase()
+            .includes(searchTerm) ||
+          earthquake.mag.toString().includes(searchTerm)
+        );
+      });
+    }
+    return results;
+  }, [filterResults, searchQuery]);
+
+  // Use earthquake alerts hook
+  useEarthquakeAlerts(earthquakes, {
+    ...alertPreferences,
+    userLocation: alertPreferences.userLocation,
+  });
+
+  // Listen for earthquake alerts
+  useEffect(() => {
+    const handleAlert = (event: CustomEvent<Earthquake>) => {
+      setLatestAlert(event.detail);
+      setAlertSnackbarOpen(true);
+    };
+
+    window.addEventListener('earthquakeAlert', handleAlert as EventListener);
+    return () => {
+      window.removeEventListener('earthquakeAlert', handleAlert as EventListener);
+    };
+  }, []);
+
+  // Save alert preferences
+  useEffect(() => {
+    localStorage.setItem('alertPreferences', JSON.stringify(alertPreferences));
+  }, [alertPreferences]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -354,7 +418,6 @@ function AppContent() {
           darkMode={darkMode}
           onThemeChange={handleThemeChange}
           earthquakes={earthquakes}
-          onSearch={handleSearch}
         />
         <Box
           sx={{
@@ -377,21 +440,43 @@ function AppContent() {
           >
             Last updated: {formatLastRefresh()}
           </Typography>
-          <Tooltip title="Refresh data">
-            <IconButton
-              onClick={fetchEarthquakes}
-              disabled={loading}
-              sx={{
-                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                "&:hover": {
-                  transform: "rotate(180deg)",
-                  backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                },
-              }}
-            >
-              <RefreshIcon />
-            </IconButton>
-          </Tooltip>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Tooltip title="Alert Settings">
+              <IconButton
+                onClick={() => setAlertSettingsOpen(true)}
+                sx={{
+                  position: 'relative',
+                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  "&:hover": {
+                    backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                  },
+                }}
+              >
+                <Badge
+                  color="error"
+                  variant="dot"
+                  invisible={!alertPreferences.enabled}
+                >
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Refresh data">
+              <IconButton
+                onClick={fetchEarthquakes}
+                disabled={loading}
+                sx={{
+                  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  "&:hover": {
+                    transform: "rotate(180deg)",
+                    backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                  },
+                }}
+              >
+                <RefreshIcon />
+              </IconButton>
+            </Tooltip>
+          </Box>
         </Box>
         {/* HERO SECTION - Only show on home page */}
         {location.pathname === "/" && (
@@ -731,6 +816,42 @@ function AppContent() {
                             Live Earthquake Map
                           </Typography>
                         </Box>
+                        
+                        {/* Search Field */}
+                        <Box sx={{ mb: 3 }}>
+                          <TextField
+                            fullWidth
+                            placeholder="Search earthquakes by location, city, or magnitude..."
+                            value={searchQuery}
+                            onChange={(e) => handleSearch(e.target.value)}
+                            variant="outlined"
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <SearchIcon color="action" />
+                                </InputAdornment>
+                              ),
+                            }}
+                            sx={{
+                              '& .MuiOutlinedInput-root': {
+                                borderRadius: 2,
+                                backgroundColor: alpha(theme.palette.background.paper, 0.8),
+                                '&:hover': {
+                                  backgroundColor: alpha(theme.palette.background.paper, 0.9),
+                                },
+                              },
+                            }}
+                          />
+                        </Box>
+                        
+                        {/* Filters Section */}
+                        <EarthquakeFilters
+                          earthquakes={earthquakes}
+                          filters={filters}
+                          onFiltersChange={updateFilters}
+                          onReset={resetFilters}
+                        />
+                        
                         <EarthquakeMap
                           ref={mapRef}
                           earthquakes={filteredEarthquakes}
@@ -795,10 +916,63 @@ function AppContent() {
                     </Box>
                   }
                 />
+                <Route
+                  path="/statistics"
+                  element={
+                    <Box sx={{ width: "100%", minWidth: 0 }}>
+                      <EarthquakeStatsDashboard earthquakes={filteredEarthquakes} />
+                    </Box>
+                  }
+                />
+                <Route
+                  path="/risk-assessment"
+                  element={
+                    <Box sx={{ width: "100%", minWidth: 0 }}>
+                      <EarthquakeRiskAssessment 
+                        earthquakes={earthquakes} 
+                        userLocation={alertPreferences.userLocation} 
+                      />
+                    </Box>
+                  }
+                />
               </Routes>
             </Box>
           )}
         </StyledContainer>
+        
+        {/* Alert Settings Dialog */}
+        <AlertSettings
+          open={alertSettingsOpen}
+          onClose={() => setAlertSettingsOpen(false)}
+          preferences={alertPreferences}
+          onSave={setAlertPreferences}
+        />
+        
+        {/* Alert Snackbar */}
+        <Snackbar
+          open={alertSnackbarOpen}
+          autoHideDuration={10000}
+          onClose={() => setAlertSnackbarOpen(false)}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert
+            onClose={() => setAlertSnackbarOpen(false)}
+            severity="warning"
+            sx={{ width: '100%' }}
+          >
+            {latestAlert && (
+              <>
+                <Typography variant="subtitle2">
+                  New Earthquake Alert!
+                </Typography>
+                <Typography variant="body2">
+                  Magnitude {latestAlert.mag} earthquake near{' '}
+                  {latestAlert.location_properties.closestCity.name}
+                </Typography>
+              </>
+            )}
+          </Alert>
+        </Snackbar>
       </Box>
     </ThemeProvider>
   );
