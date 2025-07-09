@@ -312,7 +312,7 @@ const EarthquakeRiskAssessment = ({
                       ? 'warning'
                       : 'error'
                   }
-                  size="large"
+                  size="medium"
                   sx={{ fontWeight: 'bold' }}
                 />
               </Box>

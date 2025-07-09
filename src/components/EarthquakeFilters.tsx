@@ -274,16 +274,6 @@ const EarthquakeFilters = ({
                     placeholder="Select cities"
                   />
                 )}
-                renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
-                    <Chip
-                      variant="outlined"
-                      label={option}
-                      size="small"
-                      {...getTagProps({ index })}
-                    />
-                  ))
-                }
               />
             </Box>
 

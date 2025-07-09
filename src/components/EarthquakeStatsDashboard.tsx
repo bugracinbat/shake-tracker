@@ -253,9 +253,7 @@ const EarthquakeStatsDashboard = ({
                 <PolarGrid />
                 <PolarAngleAxis type="number" domain={[0, 100]} />
                 <RadialBar
-                  minAngle={15}
                   background
-                  clockWise
                   dataKey="value"
                   fill={theme.palette.secondary.main}
                 />

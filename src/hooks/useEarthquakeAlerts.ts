@@ -59,7 +59,6 @@ export const useEarthquakeAlerts = (
         body: `Magnitude ${earthquake.mag} earthquake detected near ${earthquake.location_properties.closestCity.name}`,
         icon: '/logo.svg',
         badge: '/logo.svg',
-        vibrate: [200, 100, 200],
         requireInteraction: true,
         tag: earthquake._id,
       });
