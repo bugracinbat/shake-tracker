@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import { playAudit } from 'playwright-lighthouse';
 import { lighthouseConfig, lighthouseMobileConfig, thresholds, mobileThresholds } from './lighthouse.config';
 import fs from 'fs';

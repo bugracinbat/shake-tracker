@@ -2,6 +2,30 @@ import { test, expect } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
+interface PerformanceResource {
+  transferSize?: number;
+  initiatorType?: string;
+}
+
+interface AccessibilityIssue {
+  type: string;
+  message: string;
+  elements?: string[];
+}
+
+interface PerformanceMetric {
+  name: string;
+  value: number;
+}
+
+interface MetricsMap {
+  [key: string]: number;
+}
+
+interface ResourceTypeMap {
+  [key: string]: number;
+}
+
 const lighthouseReportDir = path.join(process.cwd(), 'lighthouse-reports');
 
 // Simple Lighthouse test that captures performance metrics using Playwright's built-in APIs
@@ -35,8 +59,9 @@ test.describe('Performance Metrics', () => {
         
         // Resource timing
         totalResources: performance.getEntriesByType('resource').length,
-        totalResourceSize: performance.getEntriesByType('resource').reduce((acc, resource: any) => {
-          return acc + (resource.transferSize || 0);
+        totalResourceSize: performance.getEntriesByType('resource').reduce((acc, resource) => {
+          const performanceResource = resource as PerformanceResource;
+          return acc + (performanceResource.transferSize || 0);
         }, 0),
       };
     });
@@ -46,7 +71,7 @@ test.describe('Performance Metrics', () => {
     const performanceMetrics2 = await client.send('Performance.getMetrics');
     
     // Extract useful metrics
-    const metricsMap = performanceMetrics2.metrics.reduce((acc: any, metric: any) => {
+    const metricsMap = performanceMetrics2.metrics.reduce((acc: MetricsMap, metric: PerformanceMetric) => {
       acc[metric.name] = metric.value;
       return acc;
     }, {});
@@ -90,7 +115,7 @@ test.describe('Performance Metrics', () => {
     
     // Run accessibility checks
     const accessibilityReport = await page.evaluate(() => {
-      const issues: any[] = [];
+      const issues: AccessibilityIssue[] = [];
       
       // Check for images without alt text
       const imagesWithoutAlt = Array.from(document.querySelectorAll('img:not([alt])'));
@@ -194,8 +219,9 @@ test.describe('Performance Metrics', () => {
         },
         resources: {
           total: resources.length,
-          byType: resources.reduce((acc: any, resource: any) => {
-            const type = resource.initiatorType || 'other';
+          byType: resources.reduce((acc: ResourceTypeMap, resource) => {
+            const performanceResource = resource as PerformanceResource;
+            const type = performanceResource.initiatorType || 'other';
             acc[type] = (acc[type] || 0) + 1;
             return acc;
           }, {}),
