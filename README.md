@@ -1,8 +1,8 @@
 # 🌍 Shake Tracker
 
-[![CI](https://github.com/yourusername/shake-tracker/workflows/CI/badge.svg)](https://github.com/yourusername/shake-tracker/actions/workflows/ci.yml)
-[![Deploy](https://github.com/yourusername/shake-tracker/workflows/Deploy%20to%20Production/badge.svg)](https://github.com/yourusername/shake-tracker/actions/workflows/deploy.yml)
-[![Lighthouse](https://img.shields.io/badge/lighthouse-performance-brightgreen)](https://github.com/yourusername/shake-tracker/actions/workflows/ci.yml)
+[![CI](https://github.com/bugracinbat/shake-tracker/workflows/CI/badge.svg)](https://github.com/bugracinbat/shake-tracker/actions/workflows/ci.yml)
+[![Deploy](https://github.com/bugracinbat/shake-tracker/workflows/Deploy%20to%20Production/badge.svg)](https://github.com/bugracinbat/shake-tracker/actions/workflows/deploy.yml)
+[![Lighthouse](https://img.shields.io/badge/lighthouse-performance-brightgreen)](https://github.com/bugracinbat/shake-tracker/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org/)
 
@@ -95,6 +95,7 @@ This project uses GitHub Actions for continuous integration and deployment:
 ### Workflows
 
 - **CI** - Runs on every push and PR to main/develop branches
+
   - ✅ ESLint and TypeScript checking
   - ✅ Build verification
   - ✅ End-to-end tests with Playwright
@@ -102,11 +103,13 @@ This project uses GitHub Actions for continuous integration and deployment:
   - ✅ Security vulnerability scanning
 
 - **Deploy** - Automatic deployment to production
+
   - 🚀 Deploys to GitHub Pages, Netlify, and Vercel
   - 📊 Post-deployment smoke tests
   - 📱 Slack notifications
 
 - **Pull Request Checks** - Enhanced PR workflow
+
   - 📝 Automatic PR analysis and comments
   - 🎨 Visual regression testing
   - 📊 Performance impact analysis
