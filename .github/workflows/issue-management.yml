@@ -1,0 +1,214 @@
+name: Issue Management
+
+on:
+  issues:
+    types: [opened, labeled]
+  issue_comment:
+    types: [created]
+  pull_request:
+    types: [opened, closed]
+
+jobs:
+  label-issues:
+    name: Auto-label Issues
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && github.event.action == 'opened'
+    
+    steps:
+      - name: Auto-label based on content
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const body = issue.body.toLowerCase();
+            const title = issue.title.toLowerCase();
+            const labels = [];
+            
+            // Auto-categorize based on keywords
+            if (title.includes('bug') || body.includes('error') || body.includes('broken')) {
+              labels.push('bug');
+            }
+            
+            if (title.includes('feature') || title.includes('enhancement') || body.includes('feature request')) {
+              labels.push('enhancement');
+            }
+            
+            if (body.includes('performance') || body.includes('slow') || body.includes('speed')) {
+              labels.push('performance');
+            }
+            
+            if (body.includes('ui') || body.includes('design') || body.includes('interface')) {
+              labels.push('ui/ux');
+            }
+            
+            if (body.includes('test') || body.includes('testing')) {
+              labels.push('testing');
+            }
+            
+            if (body.includes('documentation') || body.includes('docs') || body.includes('readme')) {
+              labels.push('documentation');
+            }
+            
+            if (labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: labels
+              });
+            }
+
+  triage-issues:
+    name: Issue Triage
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && github.event.action == 'labeled'
+    
+    steps:
+      - name: Add to project board
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const label = context.payload.label;
+            
+            // Add helpful comments based on labels
+            let comment = '';
+            
+            if (label.name === 'bug') {
+              comment = `## 🐛 Bug Report Received
+              
+              Thank you for reporting this bug! To help us resolve it quickly, please ensure you've included:
+              
+              - [ ] Steps to reproduce the issue
+              - [ ] Expected behavior
+              - [ ] Actual behavior
+              - [ ] Browser/device information
+              - [ ] Screenshots (if applicable)
+              
+              Our team will investigate this issue and get back to you soon.`;
+            }
+            
+            if (label.name === 'enhancement') {
+              comment = `## ✨ Feature Request Received
+              
+              Thank you for your suggestion! We appreciate community feedback. 
+              
+              This enhancement will be reviewed by our team and prioritized based on:
+              - User impact and demand
+              - Implementation complexity
+              - Alignment with project goals
+              
+              Feel free to add more details or use cases to help us understand the request better.`;
+            }
+            
+            if (label.name === 'performance') {
+              comment = `## ⚡ Performance Issue Noted
+              
+              Performance is important to us! This issue will be investigated with priority.
+              
+              If you have specific metrics or tools you used to identify this issue, please share them. Our Lighthouse CI will help track improvements.`;
+            }
+            
+            if (comment) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: comment
+              });
+            }
+
+  close-stale-issues:
+    name: Close Stale Issues
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    
+    steps:
+      - name: Close stale issues
+        uses: actions/stale@v8
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-issue-message: |
+            This issue has been automatically marked as stale because it has not had recent activity. 
+            It will be closed if no further activity occurs. Thank you for your contributions.
+          close-issue-message: |
+            This issue has been automatically closed due to inactivity. 
+            If you believe this issue is still relevant, please reopen it with updated information.
+          stale-issue-label: 'stale'
+          days-before-stale: 60
+          days-before-close: 7
+          exempt-issue-labels: 'pinned,security,enhancement'
+
+  pr-feedback:
+    name: PR Feedback
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Welcome new contributors
+        uses: actions/github-script@v7
+        if: github.event.action == 'opened'
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            
+            // Check if this is the user's first PR
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              creator: pr.user.login,
+              state: 'all'
+            });
+            
+            if (prs.length === 1) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: `## 🎉 Welcome to Shake Tracker!
+                
+                Thank you for your first contribution! We're excited to review your pull request.
+                
+                ### What happens next?
+                - ✅ Automated tests will run (CI/CD pipeline)
+                - 👀 Code review from maintainers
+                - 📊 Performance impact analysis
+                - 🚀 Merge and deployment (if approved)
+                
+                ### Tips for a smooth review:
+                - Ensure all tests pass
+                - Add tests for new features
+                - Update documentation if needed
+                - Respond to review feedback promptly
+                
+                Thanks for contributing to the earthquake monitoring community! 🌍`
+              });
+            }
+
+      - name: Thank contributors on merge
+        uses: actions/github-script@v7
+        if: github.event.action == 'closed' && github.event.pull_request.merged == true
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body: `## 🚀 Pull Request Merged!
+              
+              Thank you @${pr.user.login} for your contribution! Your changes have been successfully merged and will be included in the next deployment.
+              
+              ### What's next?
+              - 🔄 Changes will be deployed automatically
+              - 📊 Performance monitoring will track impact
+              - 🎉 You're now part of the Shake Tracker contributor community!
+              
+              Feel free to contribute more features or improvements anytime.`
+            });
+
+on:
+  schedule:
+    # Run stale issue cleanup every Sunday at 2 AM UTC
+    - cron: '0 2 * * 0'

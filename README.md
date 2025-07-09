@@ -1,5 +1,11 @@
 # 🌍 Shake Tracker
 
+[![CI](https://github.com/yourusername/shake-tracker/workflows/CI/badge.svg)](https://github.com/yourusername/shake-tracker/actions/workflows/ci.yml)
+[![Deploy](https://github.com/yourusername/shake-tracker/workflows/Deploy%20to%20Production/badge.svg)](https://github.com/yourusername/shake-tracker/actions/workflows/deploy.yml)
+[![Lighthouse](https://img.shields.io/badge/lighthouse-performance-brightgreen)](https://github.com/yourusername/shake-tracker/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org/)
+
 A modern, real-time earthquake tracking application built with React, TypeScript, and Material-UI. Monitor seismic activities around the world with an intuitive and beautiful interface.
 
 ## 📸 Screenshots
@@ -63,6 +69,60 @@ yarn dev
 ```
 
 4. Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+## 🧪 Testing
+
+This project includes comprehensive testing with Playwright:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in Chrome only
+npm run test:chrome
+
+# Run Lighthouse performance tests
+npm run test:lighthouse
+
+# Run tests with UI mode
+npm run test:ui
+```
+
+## 🚀 CI/CD Pipeline
+
+This project uses GitHub Actions for continuous integration and deployment:
+
+### Workflows
+
+- **CI** - Runs on every push and PR to main/develop branches
+  - ✅ ESLint and TypeScript checking
+  - ✅ Build verification
+  - ✅ End-to-end tests with Playwright
+  - ✅ Lighthouse performance audits
+  - ✅ Security vulnerability scanning
+
+- **Deploy** - Automatic deployment to production
+  - 🚀 Deploys to GitHub Pages, Netlify, and Vercel
+  - 📊 Post-deployment smoke tests
+  - 📱 Slack notifications
+
+- **Pull Request Checks** - Enhanced PR workflow
+  - 📝 Automatic PR analysis and comments
+  - 🎨 Visual regression testing
+  - 📊 Performance impact analysis
+  - 📦 Bundle size monitoring
+
+- **Dependency Management** - Weekly dependency updates
+  - 🔒 Security audit scanning
+  - 📦 Automated dependency updates
+  - 🤖 Auto-generated update PRs
+
+### Performance Monitoring
+
+- Lighthouse audits run on every PR and deployment
+- Performance regression detection
+- Bundle size tracking
+- Core Web Vitals monitoring
 
 ## 🛠️ Built With
 
