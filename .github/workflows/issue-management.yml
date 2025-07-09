@@ -7,6 +7,9 @@ on:
     types: [created]
   pull_request:
     types: [opened, closed]
+  schedule:
+    # Run stale issue cleanup every Sunday at 2 AM UTC
+    - cron: '0 2 * * 0'
 
 jobs:
   label-issues:
@@ -207,8 +210,3 @@ jobs:
               
               Feel free to contribute more features or improvements anytime.`
             });
-
-on:
-  schedule:
-    # Run stale issue cleanup every Sunday at 2 AM UTC
-    - cron: '0 2 * * 0'
