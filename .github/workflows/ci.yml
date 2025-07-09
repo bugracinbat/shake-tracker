@@ -134,12 +134,126 @@ jobs:
       - name: Run Lighthouse tests
         run: npm run test:lighthouse
 
+      - name: Generate Lighthouse summary
+        run: |
+          echo "## 📊 Lighthouse Performance Report" > lighthouse-summary.md
+          echo "" >> lighthouse-summary.md
+          
+          # Find the latest performance metrics file
+          latest_metrics=$(ls -t lighthouse-reports/performance-metrics-*.json 2>/dev/null | head -1)
+          latest_html=$(ls -t lighthouse-reports/performance-report-*.html 2>/dev/null | head -1)
+          
+          if [ -f "$latest_metrics" ]; then
+            echo "### Performance Scores" >> lighthouse-summary.md
+            echo "" >> lighthouse-summary.md
+            
+            # Extract scores from JSON
+            fcp_score=$(cat "$latest_metrics" | jq -r '.scores.firstContentfulPaint // "N/A"')
+            dcl_score=$(cat "$latest_metrics" | jq -r '.scores.domContentLoaded // "N/A"')
+            resource_score=$(cat "$latest_metrics" | jq -r '.scores.resourceCount // "N/A"')
+            total_resources=$(cat "$latest_metrics" | jq -r '.metrics.totalResources // "N/A"')
+            resource_size_mb=$(cat "$latest_metrics" | jq -r '(.metrics.totalResourceSize / 1024 / 1024 * 100 | round) / 100 // "N/A"')
+            
+            echo "| Metric | Score | Value |" >> lighthouse-summary.md
+            echo "|--------|-------|-------|" >> lighthouse-summary.md
+            echo "| First Contentful Paint | $fcp_score | - |" >> lighthouse-summary.md
+            echo "| DOM Content Loaded | $dcl_score | - |" >> lighthouse-summary.md
+            echo "| Resource Count | $resource_score | $total_resources |" >> lighthouse-summary.md
+            echo "| Total Resource Size | - | ${resource_size_mb}MB |" >> lighthouse-summary.md
+            echo "" >> lighthouse-summary.md
+          fi
+          
+          # Check accessibility report
+          latest_accessibility=$(ls -t lighthouse-reports/accessibility-audit-*.json 2>/dev/null | head -1)
+          if [ -f "$latest_accessibility" ]; then
+            echo "### Accessibility Audit" >> lighthouse-summary.md
+            echo "" >> lighthouse-summary.md
+            
+            accessibility_score=$(cat "$latest_accessibility" | jq -r '.score // "N/A"')
+            total_issues=$(cat "$latest_accessibility" | jq -r '.totalIssues // "N/A"')
+            
+            echo "| Metric | Score |" >> lighthouse-summary.md
+            echo "|--------|-------|" >> lighthouse-summary.md
+            echo "| Accessibility Score | $accessibility_score/100 |" >> lighthouse-summary.md
+            echo "| Total Issues | $total_issues |" >> lighthouse-summary.md
+            echo "" >> lighthouse-summary.md
+          fi
+          
+          echo "### 📁 Available Reports" >> lighthouse-summary.md
+          echo "" >> lighthouse-summary.md
+          echo "The following reports have been generated and are available in the artifacts:" >> lighthouse-summary.md
+          echo "" >> lighthouse-summary.md
+          
+          for file in lighthouse-reports/*; do
+            if [ -f "$file" ]; then
+              filename=$(basename "$file")
+              echo "- \`$filename\`" >> lighthouse-summary.md
+            fi
+          done
+
       - name: Upload Lighthouse reports
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-reports
-          path: lighthouse-reports/
+          path: |
+            lighthouse-reports/
+            lighthouse-summary.md
           retention-days: 30
+
+      - name: Comment Lighthouse results on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Read the lighthouse summary
+            let summary = '';
+            try {
+              summary = fs.readFileSync('lighthouse-summary.md', 'utf8');
+            } catch (e) {
+              summary = '❌ Lighthouse summary not available';
+            }
+            
+            const comment = `${summary}
+            
+            ### 🔗 How to View Reports
+            
+            1. **Download artifacts**: Go to the [Actions tab](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}) and download the \`lighthouse-reports\` artifact
+            2. **View HTML reports**: Extract the ZIP and open any \`.html\` file in your browser
+            3. **View JSON data**: Check \`.json\` files for raw performance data
+            
+            ---
+            *This comment is automatically updated on each commit*`;
+            
+            // Check if there's already a lighthouse comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const existingComment = comments.find(comment => 
+              comment.body.includes('📊 Lighthouse Performance Report')
+            );
+            
+            if (existingComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body: comment
+              });
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }
 
   security-scan:
     name: Security Scan

@@ -126,6 +126,7 @@ This project uses GitHub Actions for continuous integration and deployment:
 - Performance regression detection
 - Bundle size tracking
 - Core Web Vitals monitoring
+- [📊 How to view Lighthouse reports](docs/lighthouse-reports.md)
 
 ## 🛠️ Built With
 
