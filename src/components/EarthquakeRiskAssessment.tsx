@@ -3,7 +3,6 @@ import {
   Box,
   Paper,
   Typography,
-  Grid,
   Card,
   CardContent,
   LinearProgress,
@@ -349,9 +348,9 @@ const EarthquakeRiskAssessment = ({
         <Typography variant="h6" gutterBottom sx={{ mb: 2, mt: 4 }}>
           Risk Factors Analysis
         </Typography>
-        <Grid container spacing={2} sx={{ mb: 4 }}>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 4 }}>
           {Object.entries(riskAnalysis.factors).map(([key, value]) => (
-            <Grid item xs={12} sm={6} md={4} key={key}>
+            <Box key={key} sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)', md: '1 1 calc(33.333% - 11px)' } }}>
               <Card variant="outlined">
                 <CardContent>
                   <Typography variant="subtitle2" color="text.secondary">
@@ -377,16 +376,16 @@ const EarthquakeRiskAssessment = ({
                   </Box>
                 </CardContent>
               </Card>
-            </Grid>
+            </Box>
           ))}
-        </Grid>
+        </Box>
 
         {/* Area Statistics */}
         <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
           Seismic Activity in Your Area
         </Typography>
-        <Grid container spacing={2} sx={{ mb: 4 }}>
-          <Grid item xs={6} sm={4} md={2}>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 4 }}>
+          <Box sx={{ flex: { xs: '1 1 calc(50% - 8px)', sm: '1 1 calc(33.333% - 11px)', md: '1 1 calc(16.666% - 10px)' } }}>
             <Card variant="outlined">
               <CardContent sx={{ textAlign: 'center' }}>
                 <Typography variant="h4" color="primary">
@@ -397,8 +396,8 @@ const EarthquakeRiskAssessment = ({
                 </Typography>
               </CardContent>
             </Card>
-          </Grid>
-          <Grid item xs={6} sm={4} md={2}>
+          </Box>
+          <Box sx={{ flex: { xs: '1 1 calc(50% - 8px)', sm: '1 1 calc(33.333% - 11px)', md: '1 1 calc(16.666% - 10px)' } }}>
             <Card variant="outlined">
               <CardContent sx={{ textAlign: 'center' }}>
                 <Typography variant="h4" color="secondary">
@@ -409,8 +408,8 @@ const EarthquakeRiskAssessment = ({
                 </Typography>
               </CardContent>
             </Card>
-          </Grid>
-          <Grid item xs={6} sm={4} md={2}>
+          </Box>
+          <Box sx={{ flex: { xs: '1 1 calc(50% - 8px)', sm: '1 1 calc(33.333% - 11px)', md: '1 1 calc(16.666% - 10px)' } }}>
             <Card variant="outlined">
               <CardContent sx={{ textAlign: 'center' }}>
                 <Typography variant="h4" color="warning.main">
@@ -421,8 +420,8 @@ const EarthquakeRiskAssessment = ({
                 </Typography>
               </CardContent>
             </Card>
-          </Grid>
-          <Grid item xs={6} sm={4} md={2}>
+          </Box>
+          <Box sx={{ flex: { xs: '1 1 calc(50% - 8px)', sm: '1 1 calc(33.333% - 11px)', md: '1 1 calc(16.666% - 10px)' } }}>
             <Card variant="outlined">
               <CardContent sx={{ textAlign: 'center' }}>
                 <Typography variant="h4" color="error">
@@ -433,8 +432,8 @@ const EarthquakeRiskAssessment = ({
                 </Typography>
               </CardContent>
             </Card>
-          </Grid>
-          <Grid item xs={6} sm={4} md={2}>
+          </Box>
+          <Box sx={{ flex: { xs: '1 1 calc(50% - 8px)', sm: '1 1 calc(33.333% - 11px)', md: '1 1 calc(16.666% - 10px)' } }}>
             <Card variant="outlined">
               <CardContent sx={{ textAlign: 'center' }}>
                 <Typography variant="h4" color="info.main">
@@ -445,8 +444,8 @@ const EarthquakeRiskAssessment = ({
                 </Typography>
               </CardContent>
             </Card>
-          </Grid>
-        </Grid>
+          </Box>
+        </Box>
 
         {/* Safety Recommendations */}
         <Alert
@@ -480,7 +479,7 @@ const EarthquakeRiskAssessment = ({
           <Typography variant="h6" gutterBottom>
             Earthquake Preparedness Checklist
           </Typography>
-          <Grid container spacing={2}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
             {[
               'Emergency kit with water and food',
               'First aid supplies',
@@ -489,14 +488,14 @@ const EarthquakeRiskAssessment = ({
               'Know safe spots in each room',
               'Practice drop, cover, and hold on',
             ].map((item, index) => (
-              <Grid item xs={12} sm={6} key={index}>
+              <Box key={index} sx={{ flex: { xs: '1 1 100%', sm: '1 1 calc(50% - 8px)' } }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <CheckCircleIcon color="success" fontSize="small" />
                   <Typography variant="body2">{item}</Typography>
                 </Box>
-              </Grid>
+              </Box>
             ))}
-          </Grid>
+          </Box>
         </Paper>
       </Box>
 

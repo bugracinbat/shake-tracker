@@ -3,7 +3,6 @@ import {
   Box,
   Paper,
   Typography,
-  Grid,
   LinearProgress,
   Chip,
   Card,
@@ -175,9 +174,9 @@ const EarthquakeStatsDashboard = ({
         <PublicIcon /> Earthquake Statistics Dashboard
       </Typography>
 
-      <Grid container spacing={3}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
         {/* Magnitude Distribution */}
-        <Grid item xs={12} md={6}>
+        <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 50%' } }}>
           <Paper
             sx={{
               p: 3,
@@ -220,10 +219,10 @@ const EarthquakeStatsDashboard = ({
               </PieChart>
             </ResponsiveContainer>
           </Paper>
-        </Grid>
+        </Box>
 
         {/* Depth Distribution */}
-        <Grid item xs={12} md={6}>
+        <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 50%' } }}>
           <Paper
             sx={{
               p: 3,
@@ -270,10 +269,10 @@ const EarthquakeStatsDashboard = ({
               </RadialBarChart>
             </ResponsiveContainer>
           </Paper>
-        </Grid>
+        </Box>
 
         {/* Hourly Activity Pattern */}
-        <Grid item xs={12}>
+        <Box sx={{ flex: '1 1 100%' }}>
           <Paper
             sx={{
               p: 3,
@@ -332,10 +331,10 @@ const EarthquakeStatsDashboard = ({
               ))}
             </Box>
           </Paper>
-        </Grid>
+        </Box>
 
         {/* Top Affected Cities */}
-        <Grid item xs={12} md={6}>
+        <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 50%' } }}>
           <Paper
             sx={{
               p: 3,
@@ -389,10 +388,10 @@ const EarthquakeStatsDashboard = ({
               ))}
             </Box>
           </Paper>
-        </Grid>
+        </Box>
 
         {/* Risk Distribution */}
-        <Grid item xs={12} md={6}>
+        <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 50%' } }}>
           <Paper
             sx={{
               p: 3,
@@ -406,9 +405,9 @@ const EarthquakeStatsDashboard = ({
             <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
               Risk Level Distribution
             </Typography>
-            <Grid container spacing={2}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               {stats.severityDistribution.map((severity) => (
-                <Grid item xs={12} key={severity.name}>
+                <Box key={severity.name}>
                   <Card
                     variant="outlined"
                     sx={{
@@ -456,12 +455,12 @@ const EarthquakeStatsDashboard = ({
                       />
                     </CardContent>
                   </Card>
-                </Grid>
+                </Box>
               ))}
-            </Grid>
+            </Box>
           </Paper>
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
     </Box>
   );
 };

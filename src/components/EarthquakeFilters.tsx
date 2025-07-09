@@ -9,7 +9,6 @@ import {
   Button,
   Collapse,
   IconButton,
-  Grid,
   FormControl,
   InputLabel,
   Select,
@@ -179,9 +178,9 @@ const EarthquakeFilters = ({
         </Box>
 
         <Collapse in={expanded}>
-          <Grid container spacing={3} sx={{ mt: 1 }}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mt: 1 }}>
             {/* Magnitude Range */}
-            <Grid item xs={12} md={6}>
+            <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)' } }}>
               <Typography gutterBottom>
                 Magnitude: {filters.magnitudeRange[0].toFixed(1)} -{' '}
                 {filters.magnitudeRange[1].toFixed(1)}
@@ -199,10 +198,10 @@ const EarthquakeFilters = ({
                   { value: 10, label: '10' },
                 ]}
               />
-            </Grid>
+            </Box>
 
             {/* Depth Range */}
-            <Grid item xs={12} md={6}>
+            <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)' } }}>
               <Typography gutterBottom>
                 Depth: {filters.depthRange[0]} - {filters.depthRange[1]} km
               </Typography>
@@ -219,10 +218,10 @@ const EarthquakeFilters = ({
                   { value: 700, label: '700' },
                 ]}
               />
-            </Grid>
+            </Box>
 
             {/* Date Range */}
-            <Grid item xs={12} md={6}>
+            <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)' } }}>
               <DateTimePicker
                 label="Start Date"
                 value={filters.dateRange[0]}
@@ -234,8 +233,8 @@ const EarthquakeFilters = ({
                   },
                 }}
               />
-            </Grid>
-            <Grid item xs={12} md={6}>
+            </Box>
+            <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)' } }}>
               <DateTimePicker
                 label="End Date"
                 value={filters.dateRange[1]}
@@ -247,10 +246,10 @@ const EarthquakeFilters = ({
                   },
                 }}
               />
-            </Grid>
+            </Box>
 
             {/* Location Search */}
-            <Grid item xs={12} md={6}>
+            <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)' } }}>
               <TextField
                 fullWidth
                 label="Search Location"
@@ -259,10 +258,10 @@ const EarthquakeFilters = ({
                 onChange={handleLocationChange}
                 variant="outlined"
               />
-            </Grid>
+            </Box>
 
             {/* City Filter */}
-            <Grid item xs={12} md={6}>
+            <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)' } }}>
               <Autocomplete
                 multiple
                 options={uniqueCities}
@@ -286,10 +285,10 @@ const EarthquakeFilters = ({
                   ))
                 }
               />
-            </Grid>
+            </Box>
 
             {/* Sort Options */}
-            <Grid item xs={12} md={6}>
+            <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)' } }}>
               <FormControl fullWidth>
                 <InputLabel>Sort By</InputLabel>
                 <Select
@@ -303,8 +302,8 @@ const EarthquakeFilters = ({
                   <MenuItem value="distance">Distance</MenuItem>
                 </Select>
               </FormControl>
-            </Grid>
-            <Grid item xs={12} md={6}>
+            </Box>
+            <Box sx={{ flex: { xs: '1 1 100%', md: '1 1 calc(50% - 12px)' } }}>
               <Button
                 fullWidth
                 variant="outlined"
@@ -313,8 +312,8 @@ const EarthquakeFilters = ({
               >
                 Order: {filters.sortOrder === 'asc' ? 'Ascending' : 'Descending'}
               </Button>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Collapse>
       </Paper>
     </LocalizationProvider>
