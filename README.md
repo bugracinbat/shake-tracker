@@ -8,6 +8,8 @@
 
 A modern, real-time earthquake tracking application built with React, TypeScript, and Material-UI. Monitor seismic activities around the world with an intuitive and beautiful interface.
 
+🔗 **[Live Demo](https://bugracinbat.github.io/shake-tracker/)**
+
 ## 📸 Screenshots
 
 ### Main Dashboard
