@@ -28,19 +28,24 @@ _Application in dark mode_
 ## ✨ Features
 
 - 🌐 Real-time earthquake data visualization
-- 📊 Interactive map with earthquake locations
-- 📈 Comprehensive analytics dashboard
+- 📊 Interactive map with earthquake locations powered by Leaflet
+- 📈 Comprehensive analytics dashboard with statistics
+- 🎯 Advanced risk assessment system
+- 🔔 Smart earthquake alert notifications
 - 🌙 Dark/Light mode support
-- 📱 Responsive design for all devices
+- 📱 Responsive design for all devices (mobile-first)
 - 🔄 Auto-refresh functionality
-- 🔍 Advanced search and filtering
+- 🔍 Advanced search and filtering with multiple criteria
 - 📍 Location-based earthquake tracking
+- 📊 Data visualization with charts and graphs
+- 🎨 Modern UI with Material-UI v7 and Flexbox layouts
+- 🚨 Real-time earthquake alerts with customizable settings
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
+- Node.js (v18 or higher)
 - npm or yarn
 
 ### Installation
@@ -48,7 +53,7 @@ _Application in dark mode_
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/shake-tracker.git
+git clone https://github.com/bugracinbat/shake-tracker.git
 cd shake-tracker
 ```
 
@@ -128,27 +133,71 @@ This project uses GitHub Actions for continuous integration and deployment:
 - Core Web Vitals monitoring
 - [📊 How to view Lighthouse reports](docs/lighthouse-reports.md)
 
+## 🔧 Technical Highlights
+
+### Modern Architecture
+- **React 19** with latest features and optimizations
+- **TypeScript 5.8** for type safety and better developer experience
+- **Material-UI v7** with modern design system and Flexbox layouts
+- **Vite 6** for lightning-fast development and builds
+
+### Key Components
+- **EarthquakeMap**: Interactive map with real-time earthquake markers
+- **EarthquakeRiskAssessment**: Advanced risk analysis based on location and earthquake patterns
+- **EarthquakeStatsDashboard**: Comprehensive statistics with charts and visualizations
+- **EarthquakeFilters**: Advanced filtering system with multiple criteria
+- **AlertSettings**: Customizable earthquake alert system
+
+### Recent Improvements
+- ✅ Migrated from Material-UI Grid to modern Flexbox layouts
+- ✅ Updated to Material-UI v7 with latest components
+- ✅ Fixed TypeScript compatibility issues
+- ✅ Improved performance and accessibility
+- ✅ Enhanced responsive design for better mobile experience
+
 ## 🛠️ Built With
 
-- [React](https://reactjs.org/) - Frontend framework
-- [TypeScript](https://www.typescriptlang.org/) - Type safety
-- [Material-UI](https://mui.com/) - UI components
-- [Vite](https://vitejs.dev/) - Build tool
-- [React Router](https://reactrouter.com/) - Routing
-- [USGS Earthquake API](https://earthquake.usgs.gov/fdsnws/event/1/) - Data source
+- [React](https://reactjs.org/) v19 - Frontend framework
+- [TypeScript](https://www.typescriptlang.org/) v5.8 - Type safety
+- [Material-UI](https://mui.com/) v7 - UI components with modern design system
+- [Vite](https://vitejs.dev/) v6 - Build tool and development server
+- [React Router](https://reactrouter.com/) v7 - Client-side routing
+- [Leaflet](https://leafletjs.com/) - Interactive maps
+- [React-Leaflet](https://react-leaflet.js.org/) - React bindings for Leaflet
+- [Recharts](https://recharts.org/) - Chart library for data visualization
+- [Axios](https://axios-http.com/) - HTTP client for API calls
+- [Date-fns](https://date-fns.org/) - Date manipulation utilities
+- [Framer Motion](https://www.framer.com/motion/) - Animation library
+- [USGS Earthquake API](https://earthquake.usgs.gov/fdsnws/event/1/) - Real-time earthquake data
 
 ## 📦 Project Structure
 
 ```
 shake-tracker/
 ├── src/
-│   ├── components/     # React components
-│   ├── services/       # API services
-│   ├── types/         # TypeScript types
-│   ├── utils/         # Utility functions
-│   └── App.tsx        # Main application component
-├── public/            # Static assets
-└── docs/             # Documentation and screenshots
+│   ├── components/          # React components
+│   │   ├── EarthquakeMap.tsx           # Interactive map component
+│   │   ├── EarthquakeList.tsx          # List of earthquakes
+│   │   ├── EarthquakeFilters.tsx       # Advanced filtering system
+│   │   ├── EarthquakeAnalytics.tsx     # Analytics dashboard
+│   │   ├── EarthquakeRiskAssessment.tsx # Risk assessment system
+│   │   ├── EarthquakeStatsDashboard.tsx # Statistics dashboard
+│   │   ├── AlertSettings.tsx           # Alert configuration
+│   │   └── ...                         # Other components
+│   ├── hooks/               # Custom React hooks
+│   │   ├── useEarthquakeFilters.ts     # Filter management
+│   │   └── useEarthquakeAlerts.ts      # Alert system
+│   ├── services/            # API services
+│   │   └── earthquakeService.ts        # USGS API integration
+│   ├── types/               # TypeScript type definitions
+│   │   └── earthquake.ts               # Earthquake data types
+│   ├── utils/               # Utility functions
+│   └── App.tsx              # Main application component
+├── public/                  # Static assets
+├── tests/                   # Test files
+│   ├── lighthouse/          # Performance tests
+│   └── ...                  # Other test files
+└── docs/                    # Documentation and screenshots
 ```
 
 ## 🤝 Contributing
