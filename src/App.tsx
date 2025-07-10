@@ -980,7 +980,7 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
+    <Router basename="/shake-tracker">
       <AppContent />
     </Router>
   );
